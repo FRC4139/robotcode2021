@@ -48,7 +48,7 @@ public class Controller{
     private ChallengeFour cFour;
     private ChallengeFive cFive;
     //-1 = testing, 1 = challenge one, 2 = challenge 2... 5 = challenge 5
-    private int challengeNumber = -1; 
+    private int challengeNumber = 4; 
 
 
 
@@ -59,7 +59,7 @@ public class Controller{
       
   
         // fL, fR, bL, bR
-        wheels = new Wheels(6,8,3,1);
+        wheels = new Wheels(30, 31, 32, 33);
         xcontroller = new XboxController(0);
 
         shooter = new Shooter(shooterPortOne, shooterPortTwo);
@@ -76,7 +76,7 @@ public class Controller{
         hookUp = false;
 
         cOne = new ChallengeOne(this);
-        cTwo = new ChallengeTwo(this);
+        cTwo = new ChallengeTwo(this, 1);
         cThree = new ChallengeThree(this);
         cFour = new ChallengeFour(this);
         cFive = new ChallengeFive(this);
@@ -107,75 +107,8 @@ public class Controller{
             case 4: cFour.UpdateTeleop();  break;
             case 5: cFive.UpdateTeleop();  break;
         }
-        // SmartDashboard.putNumber("ultra sonic reading", getUltraSonicReading());
-        // SmartDashboard.putNumber("angle facing", getAngleFacing());
         
-        // setDriveSpeed(xcontroller.getY(Hand.kLeft), xcontroller.getY(Hand.kRight));
         
-
-        // //drum in 
-        // if(xcontroller.getYButtonPressed())
-        // {
-        //     wheels.inverse();
-
-        // }
-        // if(xcontroller.getBButtonPressed())
-        // {
-        //     if(hookUp)
-        //     {
-        //         hook.lower();
-        //         hookUp = false;
-        //     }
-        //     if(!hookUp)
-        //     {
-        //         hook.raise();
-        //         hookUp = true;
-        //     }
-        // }
-
-
-        // if (xcontroller.getBButtonReleased()) {
-        //     hook.stop();
-        // }
-     
-        
-
-        
-        // if(xcontroller.getBumperPressed(Hand.kLeft))
-        // {
-        //     intake.drive(0.85);
-        // }
-        // if(xcontroller.getBumperReleased(Hand.kLeft))
-        // {
-        //     intake.drive(0);
-        // }
-  
-        // if(xcontroller.getBumperPressed(Hand.kRight))
-        // {
-        //     intake.drive(-0.85);
-        // }
-        // if(xcontroller.getBumperReleased(Hand.kRight))
-        // {
-        //     intake.drive(0);
-        // }
-        // //inverse wheels
-     
-        // //left trigger; revs up shooter
-        // if(xcontroller.getTriggerAxis(Hand.kLeft)>.1)
-        // {
-        //     shooter.charge(0.8); //big wheel
-        // } else {
-        //     shooter.charge(0);
-        // }
-        // // right trigger; controls shooter
-        
-        // if(xcontroller.getTriggerAxis(Hand.kRight)>0)
-        // {
-        //     shooter.fire(-0.4); //blue wheel
-        // } else {
-        //     shooter.fire(0);
-        // }
-
 
 
     }    
@@ -233,7 +166,7 @@ public class Controller{
     public double getAngleFacing() 
     {
         // return value is in degrees
-        return ahrs.getAngle();
+        return ahrs.getAngle() * -1;
     }
     
     public double getDistanceTravelled(String pos) {
@@ -256,6 +189,28 @@ public class Controller{
     public void setFeederSpeed(double v) {
         shooter.fire(v);
     }
-   
+    
 
+    public double getCompassHeading() {
+        return ahrs.getCompassHeading();
+    }
+
+    public void calibrate() {
+        ahrs.calibrate();
+    }
+
+
+    public void diffDrive(double s1, double s2, Wheels.DriveType driveType) {
+        wheels.diffDrive(s1, s2, driveType);
+    }
+   
+    public void resetDistance() {
+        wheels.resetRotations();
+    }
+
+    public void inverseWheels() {
+        wheels.inverse();
+    }
 }
+
+

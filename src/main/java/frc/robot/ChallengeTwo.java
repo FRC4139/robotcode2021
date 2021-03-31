@@ -1,9 +1,9 @@
 package frc.robot;
 
+
 import edu.wpi.first.wpilibj.XboxController;
 
 //uncomment ones you need
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 // import edu.wpi.first.wpilibj.SPI;
@@ -19,11 +19,33 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class ChallengeTwo {
 
     //put constants here
-    private static double FEEDER_SPEED = -0.4;
-    private static double ZERO = 0;
+    private static final double FEEDER_SPEED = -0.4;
+    private static final double ZERO = 0;
 
+    private static final double DISTANCE_PIVOT_TO_WHEEL = 22.5 / 2;
+
+    private static final double MAX_DRIVE_SPEED = 0.8;
+    private static final double OUTER_TURN_DRIVE_SPEED = 0.6; 
+
+    //constants for path 3 (bounce)
+    private static final double R_T_ONE = 20; // we can change this
+    private static final double R_T_TWO =  (1800 - Math.pow(R_T_ONE, 2)) / (60 - 2 * R_T_ONE); 
+    private static final double R_T_THREE = ( 11700 - Math.pow(R_T_ONE, 2)) / ( 120 - 2 * R_T_ONE); 
+    private static final double R_T_FOUR = R_T_ONE;
+    private static final double R_T_FIVE = (3400 - Math.pow(R_T_ONE, 2)) / (60 - 2 * R_T_ONE);
+    private static final double R_T_SIX = R_T_FIVE;
+    private static final double R_T_SEVEN = R_T_ONE;
+    private static final double R_T_NINE = R_T_ONE;
+    private static final double R_T_TEN = (9000 - Math.pow(R_T_ONE, 2)) / (60 - 2 * R_T_ONE);
+    private static final double R_T_ELEVEN = R_T_TWO;
+    private static final double R_T_TWELVE = R_T_ONE;
+    //------------------------------------------------------
     //put variables here
+    private double CIRCLE_RADIUS = 20.0; // changed throughout path 3 code 
+    private double INNER_TURN_DRIVE_SPEED = (CIRCLE_RADIUS - DISTANCE_PIVOT_TO_WHEEL) / (CIRCLE_RADIUS + DISTANCE_PIVOT_TO_WHEEL) * OUTER_TURN_DRIVE_SPEED; 
 
+    private int segment = 1; 
+    private int path = 1;
     //this is the main controller class (which we have written before), which will call the update methods below. This is NOT an Xbox Controller
     private Controller controller;   
 
@@ -55,13 +77,23 @@ public class ChallengeTwo {
     
     */
 
+    /* 
+        Starting positions:
 
+        Barrel Path:
+        Slalom Path: 
+        Bounce Path: Front right corner should be on the vertical connecting B2, D2 and should be X inches above D2. The robot should be 
+
+    
+    
+    */
 
     // Methods
 
     //constructor
-    public ChallengeTwo(Controller cIn) {
+    public ChallengeTwo(Controller cIn, int p) {
         controller = cIn; 
+        path = p;
         xController = controller.xcontroller;
     }
 
@@ -80,9 +112,71 @@ public class ChallengeTwo {
 
     //this is called every 20 milliseconds during autonomous
     public void UpdateAutonomous() {
-
+        // Display useful information
+        SmartDashboard.putNumber("Current Path", path);
+        SmartDashboard.putNumber("Current Segment", segment);
+        SmartDashboard.putNumber("Total distance travelled (in)", getDistanceTravelled());
+        SmartDashboard.putNumber("Angle Facing Real (deg)", controller.getAngleFacing());
+        SmartDashboard.putNumber("Angle Facing Adjusted (deg)", getAngleFacing());
+        if (path == 1) {
+            if (segment == 1) {
+                SetSpeedStraight();
+            } else if (segment == 2) {
+                SetSpeedClockwise(); 
+            } else if (segment == 3) {
+                SetSpeedStraight();
+            } else if (segment == 4) {
+                SetSpeedCounterClockwise(); 
+            } else if (segment == 5) {
+                SetSpeedStraight();
+            } else if (segment == 6) {
+                SetSpeedCounterClockwise(); 
+            } else if (segment == 7) {
+                SetSpeedStraight();
+            } else if (segment == 8) {
+                controller.setDriveSpeed(0, 0);
+            }
+        } else if (path == 2) {
+            if      (segment == 1) { SetSpeedStraight(); }
+            else if (segment == 2) { SetSpeedClockwise(); } 
+            else if (segment == 3) { SetSpeedStraight(); }
+            else if (segment == 4) { SetSpeedClockwise(); } 
+            else if (segment == 5) { SetSpeedStraight(); }
+            else if (segment == 6) { SetSpeedCounterClockwise(); } 
+            else if (segment == 7) { SetSpeedStraight();}
+            else if (segment == 8) { SetSpeedClockwise(); }
+            else if (segment == 9) { SetSpeedStraight();}
+            else if (segment == 10) { SetSpeedClockwise(); }
+            else if (segment == 11) { SetSpeedStraight(); } 
+            else if (segment == 12) { controller.setDriveSpeed(0, 0); }
+        } else if (path == 3) {
+            if      (segment == 1) { UpdateTurnVariables( R_T_ONE ); SetSpeedCounterClockwise(); }
+            else if (segment == 2) { UpdateTurnVariables( R_T_TWO ); SetSpeedCounterClockwise(); }
+            else if (segment == 3) { UpdateTurnVariables( R_T_THREE ); SetSpeedCounterClockwise(-1);}
+            else if (segment == 4) { UpdateTurnVariables( R_T_FOUR ); SetSpeedCounterClockwise(-1); }
+            else if (segment == 5) { UpdateTurnVariables( R_T_FIVE ); SetSpeedCounterClockwise(-1);}
+            else if (segment == 6) { UpdateTurnVariables( R_T_SIX ); SetSpeedCounterClockwise();}
+            else if (segment == 7) { UpdateTurnVariables( R_T_SEVEN ); SetSpeedCounterClockwise();}
+            else if (segment == 8) { SetSpeedStraight();}
+            else if (segment == 9) { UpdateTurnVariables( R_T_NINE ); SetSpeedCounterClockwise();}
+            else if (segment == 10) {UpdateTurnVariables( R_T_TEN ); SetSpeedCounterClockwise(); }
+            else if (segment == 11) {UpdateTurnVariables( R_T_ELEVEN ); SetSpeedCounterClockwise(-1);  }
+            else if (segment == 12) {UpdateTurnVariables( R_T_TWELVE ); SetSpeedCounterClockwise(-1);  }
+        } else {
+            SmartDashboard.putBoolean("SOMETHING WENT WRONG", true);
+        }
+        
+        checkSegmentIncrement();
     }
 
+    private void SetSpeedClockwise() { controller.setDriveSpeed(OUTER_TURN_DRIVE_SPEED, INNER_TURN_DRIVE_SPEED); }
+    private void SetSpeedClockwise(int backwards) { controller.setDriveSpeed(backwards * INNER_TURN_DRIVE_SPEED, backwards * OUTER_TURN_DRIVE_SPEED); }
+
+    private void SetSpeedStraight() { controller.setDriveSpeed(MAX_DRIVE_SPEED, MAX_DRIVE_SPEED); }
+    private void SetSpeedStraight(int backwards) { controller.setDriveSpeed(backwards * MAX_DRIVE_SPEED, backwards * MAX_DRIVE_SPEED); }
+
+    private void SetSpeedCounterClockwise() { controller.setDriveSpeed(INNER_TURN_DRIVE_SPEED, OUTER_TURN_DRIVE_SPEED); }
+    private void SetSpeedCounterClockwise(int backwards) { controller.setDriveSpeed(backwards * OUTER_TURN_DRIVE_SPEED, backwards * INNER_TURN_DRIVE_SPEED); }
 
     //this is called every 20 milliseconds during teleop (manually controlled by human with xboxcontroller)
     public void UpdateTeleop() {
@@ -96,10 +190,241 @@ public class ChallengeTwo {
 
         // This is a very basic way of driving using two joysticks. Think about other ways the robot can be driven. Which would be the easiest and/or most efficient for the driver?
         controller.setDriveSpeed(xController.getY(Hand.kLeft), xController.getY(Hand.kRight));
-
+        if (xController.getBumper(Hand.kLeft)) { controller.calibrate(); }
 
     }
 
+    private void checkSegmentIncrement() {
+        if (path == 1) {
+                 if (segment == 1 && getDistanceTravelled() >= getIntendedDistanceOne()) segment++;
+            else if (segment == 2 && getDistanceTravelled() >= getIntendedDistanceTwo() && getAngleFacing() >= getIntendedAngleTwo()) segment++;
+            else if (segment == 3 && getDistanceTravelled() >= getIntendedDistanceThree()) segment++;
+            else if (segment == 4 && getDistanceTravelled() >= getIntendedDistanceFour() &&  getAngleFacing() <= getIntendedAngleFour()) segment++;
+            else if (segment == 5 && getDistanceTravelled() >= getIntendedDistanceFive()) segment++;
+            else if (segment == 6 && getDistanceTravelled() >= getIntendedDistanceSix() && getAngleFacing() <= getIntendedAngleSix()) segment++;
+            else if (segment == 7 && getDistanceTravelled() >= getIntendedDistanceSeven()) segment++;
+        } else if (path == 2) {
+                 if (segment == 1 && getDistanceTravelled() >= getIntendedDistanceOne()) segment++;
+            else if (segment == 2 && getDistanceTravelled() >= getIntendedDistanceTwo() && getAngleFacing() <= getIntendedAngleTwo()) segment++;
+            else if (segment == 3 && getDistanceTravelled() >= getIntendedDistanceThree()) segment++;
+            else if (segment == 4 && getDistanceTravelled() >= getIntendedDistanceFour() && getAngleFacing() <= getIntendedAngleFour()) segment++;
+            else if (segment == 5 && getDistanceTravelled() >= getIntendedDistanceFive()) segment++;
+            else if (segment == 6 && getDistanceTravelled() >= getIntendedDistanceSix() && getAngleFacing() >= getIntendedAngleSix()) segment++;
+            else if (segment == 7 && getDistanceTravelled() >= getIntendedDistanceSeven()) segment++;
+            else if (segment == 8 && getDistanceTravelled() >= getIntendedDistanceEight() && getAngleFacing() <= getIntendedAngleEight()) segment++;
+            else if (segment == 9 && getDistanceTravelled() >= getIntendedDistanceNine()) segment++;
+            else if (segment == 10 && getDistanceTravelled() >= getIntendedDistanceTen() && getAngleFacing() <= getIntendedAngleTen()) segment++;
+            else if (segment == 11 && getDistanceTravelled() >= getIntendedDistanceEleven()) segment++; 
+        } else if (path == 3) {
+                 if (segment == 1 && getDistanceTravelled() >= getIntendedDistanceOne() && getAngleFacing() >= getIntendedAngleOne()) segment++;
+            else if (segment == 2 && getDistanceTravelled() >= getIntendedDistanceTwo() && getAngleFacing() >= getIntendedAngleTwo()) segment++;
+            else if (segment == 3 && getDistanceTravelled() <= getIntendedDistanceThree() && getAngleFacing() >= getIntendedAngleThree()) segment++;
+            else if (segment == 4 && getDistanceTravelled() <= getIntendedDistanceFour() && getAngleFacing() >= getIntendedAngleFour()) segment++;
+            else if (segment == 5 && getDistanceTravelled() <= getIntendedDistanceFive() && getAngleFacing() >= getIntendedAngleFour()) segment++;
+            else if (segment == 6 && getDistanceTravelled() >= getIntendedDistanceSix() && getAngleFacing() >= getIntendedAngleSix()) segment++;
+            else if (segment == 7 && getDistanceTravelled() >= getIntendedDistanceSeven() && getAngleFacing() >= getIntendedAngleSeven()) segment++;
+            else if (segment == 8 && getDistanceTravelled() >= getIntendedDistanceEight()) segment++;
+            else if (segment == 9 && getDistanceTravelled() >= getIntendedDistanceNine() && getAngleFacing() >= getIntendedAngleNine()) segment++;
+            else if (segment == 10 && getDistanceTravelled() >= getIntendedDistanceTen() && getAngleFacing() >= getIntendedAngleTen()) segment++;
+            else if (segment == 11 && getDistanceTravelled() <= getIntendedDistanceEleven() && getAngleFacing() >= getIntendedAngleEleven()) segment++; 
+            else if (segment == 12 && getDistanceTravelled() <= getIntendedDistanceTwelve() && getAngleFacing() >= getIntendedAngleTwelve()) segment++; 
+        }
+    }
 
 
+    private double getIntendedDistanceOne() {
+        if (path == 1) return 90;
+        if (path == 2) {
+            double theta = Math.asin( (20.0 + CIRCLE_RADIUS) / 60.0  );
+            return ( 60.0 * CIRCLE_RADIUS / ( 20.0 + CIRCLE_RADIUS ) * Math.cos( theta )) + ( ( 1200 ) / (20 + CIRCLE_RADIUS) ) / Math.cos(theta) + 16 * Math.tan(theta);
+
+        } else {
+            return getIntendedAngleOne() * ( CIRCLE_RADIUS - DISTANCE_PIVOT_TO_WHEEL);
+        }
+    }
+
+    private double getIntendedAngleOne() {
+
+        return Math.atan( ( -30 + (1800 - Math.pow(R_T_ONE, 2) ) / ( 60 - 2 * R_T_ONE  ) ) / 30 ); 
+
+    }
+
+    private double getIntendedAngleTwo() {
+        if (path == 1) return (2.50 * Math.PI) - Math.acos(CIRCLE_RADIUS / (15.0 * Math.sqrt(13.0))) - Math.atan(60.0/90.0);
+        if (path == 2)  {
+            return  -1 * Math.asin( (20.0 + CIRCLE_RADIUS) / 60.0  );
+        } else {
+            return Math.PI / 2;
+        }
+    }
+
+    private double getIntendedDistanceTwo() {
+        if (path == 1) return getIntendedDistanceOne() + getIntendedAngleTwo() * (CIRCLE_RADIUS + DISTANCE_PIVOT_TO_WHEEL);
+        if (path == 2)  {
+            return getIntendedDistanceOne() + Math.asin( (20.0 + CIRCLE_RADIUS) / 60.0  ) * (CIRCLE_RADIUS + DISTANCE_PIVOT_TO_WHEEL);
+        } else {
+            return getIntendedDistanceOne() + (R_T_TWO - DISTANCE_PIVOT_TO_WHEEL) * (getIntendedAngleTwo() - getIntendedAngleOne()); 
+        }
+    }
+
+    private double getIntendedDistanceThree() {
+        if (path == 1) return getIntendedDistanceTwo() + (2.0 * Math.sqrt(2925 - Math.pow(CIRCLE_RADIUS, 2.0)));
+        if (path == 2)  {
+            return getIntendedDistanceTwo() + 120.0;
+        } else {
+            return getIntendedDistanceTwo() - (getIntendedAngleThree() - getIntendedAngleTwo()) * (CIRCLE_RADIUS + DISTANCE_PIVOT_TO_WHEEL);
+        }
+    }
+
+    private double getIntendedAngleThree() {
+        return getIntendedAngleTwo() + Math.atan( (90) / (R_T_THREE - 60) ) ;
+    }
+
+    private double getIntendedAngleFour() {
+        if (path == 1) return 0.25 * Math.PI;
+        if (path == 2)  {
+            return getIntendedAngleTwo() - Math.asin( CIRCLE_RADIUS / 30.0  );
+        } else {
+            return getIntendedAngleThree() + (Math.PI - (getIntendedAngleThree() - getIntendedAngleTwo()) - Math.atan( 50 / (R_T_FIVE - 30)));
+        }
+    }
+
+    private double getIntendedDistanceFour() {
+        if (path == 1) return getIntendedDistanceThree() + (- Math.PI/4 + getIntendedAngleTwo()) * (CIRCLE_RADIUS - DISTANCE_PIVOT_TO_WHEEL);
+        if (path == 2)  {
+            return getIntendedDistanceThree() + Math.asin( CIRCLE_RADIUS / 30.0  ) * (CIRCLE_RADIUS + DISTANCE_PIVOT_TO_WHEEL);
+        } else {
+            return getIntendedDistanceThree() - (getIntendedAngleFour() - getIntendedAngleThree()) * (CIRCLE_RADIUS + DISTANCE_PIVOT_TO_WHEEL);
+        }
+    }
+
+    private double getIntendedDistanceFive() {
+        if (path == 1) return getIntendedDistanceFour() + 60.0 * Math.sqrt(2);
+        if (path == 2)  {
+            return getIntendedDistanceFour() + 2 * Math.sqrt(900.0 - Math.pow(CIRCLE_RADIUS, 2));
+        } else {
+            return getIntendedDistanceFour() - (getIntendedAngleFive() - getIntendedAngleFour()) * (CIRCLE_RADIUS + DISTANCE_PIVOT_TO_WHEEL);
+        }
+    }
+    
+    private double getIntendedAngleFive() {
+        return Math.PI * 3 / 2;
+    }
+
+    private double getIntendedAngleSix() {
+        if (path == 1) return -1 * Math.PI;
+        if (path == 2)  {
+            return getIntendedAngleFour() + 2 * Math.PI - 2 * Math.acos( CIRCLE_RADIUS / 30.0  );
+        } else {
+            return getIntendedAngleFive() + (getIntendedAngleFive() - getIntendedAngleFour());
+        }
+    }
+
+    private double getIntendedDistanceSix() {
+        if (path == 1) return getIntendedDistanceFive() + (1.25 * Math.PI * (CIRCLE_RADIUS - DISTANCE_PIVOT_TO_WHEEL));
+        if (path == 2)  {
+            return getIntendedDistanceFive() + (2 * Math.PI - 2 * Math.acos( CIRCLE_RADIUS / 30.0  )) * (CIRCLE_RADIUS - DISTANCE_PIVOT_TO_WHEEL);
+        } else {
+            return getIntendedDistanceFive() + (getIntendedAngleSix() - getIntendedAngleFive()) * (CIRCLE_RADIUS + DISTANCE_PIVOT_TO_WHEEL);
+        }
+    }
+
+    private double getIntendedDistanceSeven() {
+        //803 
+        if (path == 1) return getIntendedDistanceSix() + 260; 
+        if (path == 2)  {
+            return getIntendedDistanceSix() + 2 * Math.sqrt(900.0 - Math.pow(CIRCLE_RADIUS, 2));
+        } else {
+            return getIntendedAngleSix() + (getIntendedAngleSeven() - getIntendedAngleSix()) * (CIRCLE_RADIUS + DISTANCE_PIVOT_TO_WHEEL);
+        }
+    }
+
+    private double getIntendedAngleSeven() {
+        return Math.PI * 2;
+    }
+
+    private double getIntendedAngleEight() {
+        if (path == 2) {
+            return getIntendedAngleSix()  - Math.asin( CIRCLE_RADIUS / 30.0  );
+        } else {
+            return 0.0;
+        }
+    }
+
+    private double getIntendedDistanceEight() {
+        if (path == 2)  {
+            return getIntendedDistanceSeven() + Math.asin( CIRCLE_RADIUS / 30.0  ) * (CIRCLE_RADIUS + DISTANCE_PIVOT_TO_WHEEL);
+        } else {
+            return getIntendedDistanceSeven() + 30;
+        }
+    }
+
+    private double getIntendedDistanceNine() {
+        if (path == 2) {
+            return getIntendedDistanceEight() + 120.0;
+        } else {
+            return getIntendedDistanceEight() + (getIntendedAngleNine() - getIntendedAngleSeven()) * (CIRCLE_RADIUS + DISTANCE_PIVOT_TO_WHEEL);
+        }
+    }
+
+    private double getIntendedAngleNine() {
+        return getIntendedAngleSeven() + (Math.PI/2 - Math.atan( (90) / (R_T_TEN - 30))); 
+    }
+
+    private double getIntendedAngleTen() {
+        if (path == 2) {
+            return getIntendedAngleEight()  - Math.asin( (20.0 + CIRCLE_RADIUS) / 60.0  );
+        } else {
+            return 5 * Math.PI / 2;
+        }
+    }
+
+    private double getIntendedDistanceTen() {
+        if (path == 2) {
+            return getIntendedDistanceNine() + Math.asin( (20.0 + CIRCLE_RADIUS) / 60.0  ) * (CIRCLE_RADIUS + DISTANCE_PIVOT_TO_WHEEL);
+        } else {
+            return getIntendedDistanceNine() + (getIntendedAngleTen() - getIntendedAngleNine()) * (CIRCLE_RADIUS + DISTANCE_PIVOT_TO_WHEEL);
+        }
+    }
+
+    private double getIntendedDistanceEleven() {
+        if (path == 2) {
+            return getIntendedDistanceTen() + getIntendedDistanceOne();
+        } else {
+            return getIntendedDistanceTen() - (getIntendedAngleEleven() - getIntendedAngleTen()) * (CIRCLE_RADIUS + DISTANCE_PIVOT_TO_WHEEL);
+        }
+    }
+
+    private double getIntendedAngleEleven() {
+        return getIntendedAngleTen() + (getIntendedAngleTwo() - getIntendedAngleOne()); 
+    }
+
+    private double getIntendedAngleTwelve() {
+        return Math.PI * 3;
+    }
+    
+    private double getIntendedDistanceTwelve() {
+        return getIntendedDistanceEleven() - (getIntendedAngleEleven() - getIntendedAngleTen()) * (CIRCLE_RADIUS + DISTANCE_PIVOT_TO_WHEEL);
+    }
+
+    private double getDistanceTravelled() {
+        return controller.getDistanceTravelled("fL") * 12.0;
+    }
+
+    private double getAngleFacing() {
+        if (path == 1) {
+            return -1 * Math.toRadians(controller.getAngleFacing());
+        } else if (path == 2) {
+            return Math.toRadians(controller.getAngleFacing());
+        } else {
+            
+            return Math.toRadians(controller.getAngleFacing());
+        }
+        
+    }
+
+    private void UpdateTurnVariables(double newRadius) {
+        CIRCLE_RADIUS = newRadius;
+        INNER_TURN_DRIVE_SPEED = (CIRCLE_RADIUS - DISTANCE_PIVOT_TO_WHEEL) / (CIRCLE_RADIUS + DISTANCE_PIVOT_TO_WHEEL) * OUTER_TURN_DRIVE_SPEED;
+    }
 }

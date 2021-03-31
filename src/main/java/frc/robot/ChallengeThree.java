@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 // import edu.wpi.first.wpilibj.DigitalInput;
 // import edu.wpi.first.wpilibj.Servo;
 // import edu.wpi.first.wpilibj.Timer;
+import frc.robot.Wheels.DriveType;
 
 
 
@@ -25,7 +26,8 @@ public class ChallengeThree {
     //put variables here
 
     //this is the main controller class (which we have written before), which will call the update methods below. This is NOT an Xbox Controller
-    private Controller controller;   
+    private Controller controller;
+    private DriveType driveType;
 
     /* 
         Instructions on how to get data from the robot:
@@ -63,6 +65,7 @@ public class ChallengeThree {
     public ChallengeThree(Controller cIn) {
         controller = cIn; 
         xController = controller.xcontroller;
+        driveType = DriveType.ARCADE;
     }
 
 
@@ -80,7 +83,7 @@ public class ChallengeThree {
 
     //this is called every 20 milliseconds during autonomous
     public void UpdateAutonomous() {
-
+        // unused
     }
 
 
@@ -88,18 +91,27 @@ public class ChallengeThree {
     public void UpdateTeleop() {
 
         /* 
-        
-            Explain your controls here, so the driver knows what to do. 
-                > Drive the robot using the left and right joysticks to control the speed of their respective wheels. 
-        
+                > Drive the robot in arcade or tank drive mode.
+                    > Arcade: Left joystick is used for all driving and turning.
+                    > Tank: Left joystick is used for the speed of the left wheels, right joystick is used for the speed of the right wheels.
+                > Press the A button to switch between arcade and tank drive.
         */
 
-        // This is a very basic way of driving using two joysticks. Think about other ways the robot can be driven. Which would be the easiest and/or most efficient for the driver?
-        controller.setDriveSpeed(xController.getY(Hand.kLeft), xController.getY(Hand.kRight));
+        if(xController.getAButtonPressed()) {
+            if(driveType == DriveType.ARCADE)
+                driveType = DriveType.TANK;
+            else
+                driveType = DriveType.ARCADE;
+        }
 
+        switch(driveType) {
+            case ARCADE:
+                controller.diffDrive(xController.getY(Hand.kLeft), xController.getX(Hand.kLeft), driveType);
+                break;
+            case TANK:
+                controller.diffDrive(xController.getY(Hand.kLeft), xController.getY(Hand.kRight), driveType);
+        }
 
     }
-
-
 
 }

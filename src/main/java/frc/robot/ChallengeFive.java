@@ -13,32 +13,20 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 // import edu.wpi.first.wpilibj.DigitalInput;
 // import edu.wpi.first.wpilibj.Servo;
 // import edu.wpi.first.wpilibj.Timer;
-//a
 
-//faiufoahuifahifhe
+
+
 public class ChallengeFive {
 
     //put constants here
-    
+    private static double FEEDER_SPEED = -0.4;
     private static double ZERO = 0;
-    private static final double FULLPOWER = .9;
-    private static final double TURNPOWER = .7;
-    private static final double FULLPOWER_neg = -.9;
-    private static final double TURNPOWER_neg = -.7;
 
     //put variables here
-    private static double negativeIntake = -0.4;
-    private static double positiveIntake = 0.4;
-    private static double highFlywheelSpeed = 0.7;
-    private static double flywheelSpeed = 0.5;
-    private static boolean inverse = false;
-    private static double angle;
-    private static double ultrasonic;
-    private static double distance;
-    
+
     //this is the main controller class (which we have written before), which will call the update methods below. This is NOT an Xbox Controller
     private Controller controller;   
-    
+
     /* 
         Instructions on how to get data from the robot:
             controller.getAngleFacing() returns a double indicating which angle (in degrees) the robot is facing
@@ -49,7 +37,7 @@ public class ChallengeFive {
             controller.setDriveSpeed(double leftSpeed, double rightSpeed) sets the speed of the right and left wheels. Only the wheels in the back will be powered. 
                                                                           The values MUST be between (0.9 and -0.9) (negative is backwards).
             controller.setIntakeSpeed(double speed) sets the speed of the intake. Values should be between (-0.9 and 0.9) 
-//Dillon note: set a button to toggle the speed of intake? The button will not move the intake, the joystick will
+
             The shooter works in two seperate parts. 
             First, there is a big and strong wheel which actually launches the balls. This wheel must be charged up for 0.5 - 1.5 seconds before shooting.
             controller.setShooterSpeed(double speed) controls the speed of the big shooter wheel. This value should be between (0.4 and 0.9).             
@@ -92,106 +80,26 @@ public class ChallengeFive {
 
     //this is called every 20 milliseconds during autonomous
     public void UpdateAutonomous() {
-        
+
     }
 
 
     //this is called every 20 milliseconds during teleop (manually controlled by human with xboxcontroller)
     public void UpdateTeleop() {
 
-         angle = controller.getAngleFacing();
-         ultrasonic = controller.getUltraSonicReading();
-         distance = controller.getDistanceTravelled("fL");
-//this if statement does not descirbe what the controls will be, I have this as an example to use as reference.
-       System.out.println("angle:" + angle + "ultrasonic:" + ultrasonic + "distance" + distance);
-
-
-    
-
-         if(xController.getXButtonPressed() == true)
-         {
-             inverse = true;
-             //will activate inverse as long as someone HOLDS down the x button. 
-         }
-        if(xController.getXButtonPressed() == false)
-        {
-         inverse = false;
-            //when no one is pressing the x button, inverse reverts back to false
-        }        
-
-
-         if(xController.getYButtonPressed() == true)
-         {
-           flywheelSpeed = highFlywheelSpeed;
-           //sets the flywheel speed to the "high value" Just one tap should work
-         }
+        /* 
         
-         if(inverse == false){
-         if(xController.getY(Hand.kLeft) != 0 || xController.getX(Hand.kLeft) != 0)
-         { // if the joystick is not idle
-            if(xController.getY(Hand.kLeft) > 0 && xController.getY(Hand.kLeft) > Math.abs(xController.getX(Hand.kLeft))) 
-            {
-                controller.setDriveSpeed(FULLPOWER, FULLPOWER); // move up
-            }
-            if(xController.getY(Hand.kLeft) < 0 && Math.abs(xController.getX(Hand.kLeft))< Math.abs(xController.getY(Hand.kLeft)))
-            {
-                controller.setDriveSpeed(FULLPOWER_neg, FULLPOWER_neg);// move down
-            }
-            if(xController.getX(Hand.kLeft) < 0 && Math.abs(xController.getY(Hand.kLeft))< Math.abs(xController.getX(Hand.kLeft)))
-            {
-                controller.setDriveSpeed(TURNPOWER, FULLPOWER);// move left
-            }
-            if(xController.getX(Hand.kLeft) > 0 && Math.abs(xController.getY(Hand.kLeft))< Math.abs(xController.getX(Hand.kLeft)))
-            {
-                controller.setDriveSpeed(FULLPOWER, TURNPOWER); //move right
-            }
-        }
-        else{
-            controller.setDriveSpeed(ZERO, ZERO); // stop motors/idle
-        }
-    }
-    if(inverse == true)
-    {  //These are inverse controls
-        if(xController.getY(Hand.kLeft) != 0 || xController.getX(Hand.kLeft) != 0)
-         { // if the joystick is not idle
-            if(xController.getY(Hand.kLeft) < 0 && xController.getY(Hand.kLeft) < Math.abs(xController.getX(Hand.kLeft))) 
-            {
-                controller.setDriveSpeed(FULLPOWER, FULLPOWER); // move down
-            }
-            if(xController.getY(Hand.kLeft) > 0 && Math.abs(xController.getX(Hand.kLeft))> Math.abs(xController.getY(Hand.kLeft)))
-            {
-                controller.setDriveSpeed(FULLPOWER_neg, FULLPOWER_neg);// move up
-            }
-            if(xController.getX(Hand.kLeft) > 0 && Math.abs(xController.getY(Hand.kLeft)) > Math.abs(xController.getX(Hand.kLeft)))
-            {
-                controller.setDriveSpeed(TURNPOWER, FULLPOWER);// move right
-            }
-            if(xController.getX(Hand.kLeft) < 0 && Math.abs(xController.getY(Hand.kLeft)) < Math.abs(xController.getX(Hand.kLeft)))
-            {
-                controller.setDriveSpeed(FULLPOWER, TURNPOWER); //move left
-            }
-        }
-        else{
-            controller.setDriveSpeed(ZERO, ZERO); // stop motors/idle
-        } 
-    }
-        if(xController.getY(Hand.kRight) == 0)
-        {
-            if(xController.getY(Hand.kRight) > 0)
-            {
-                controller.setIntakeSpeed(negativeIntake);
-                //intake moves up
-            }
-            if(xController.getY(Hand.kRight) < 0)
-            {
-                 controller.setIntakeSpeed(positiveIntake);
-                 //intake moves down
-            }
-        }                           
-//a
+            Explain your controls here, so the driver knows what to do. 
+                > Drive the robot using the left and right joysticks to control the speed of their respective wheels. 
+        
+        */
+
+        // This is a very basic way of driving using two joysticks. Think about other ways the robot can be driven. Which would be the easiest and/or most efficient for the driver?
+        controller.setDriveSpeed(xController.getY(Hand.kLeft), xController.getY(Hand.kRight));
+
 
     }
- 
+
 
 
 }
