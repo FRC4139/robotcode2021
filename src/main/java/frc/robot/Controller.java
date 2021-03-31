@@ -114,12 +114,12 @@ public class Controller{
     }    
 
     public void UpdateAutonomous() {
-        // code for all situations - DO NOT COMMENT OUT
-        SmartDashboard.putNumber("Front Left Encoder Distance Travelled (ft)", getDistanceTravelled("fL"));
-        SmartDashboard.putNumber("Back Right Encoder Distance Travelled (ft)", getDistanceTravelled("bR"));
-        SmartDashboard.putNumber("Angle Facing From Gyro (degrees)", getAngleFacing());
-        SmartDashboard.putNumber("Ultrasonic Reading (feet):", getUltraSonicReading() / 12);
+        // SmartDashboard.putNumber("Front Left Encoder Distance Travelled (ft)", getDistanceTravelled("fL"));
+        // SmartDashboard.putNumber("Back Right Encoder Distance Travelled (ft)", getDistanceTravelled("bR"));
+        // SmartDashboard.putNumber("Angle Facing From Gyro (degrees)", getAngleFacing());
+        // SmartDashboard.putNumber("Ultrasonic Reading (feet):", getUltraSonicReading() / 12);
         
+        wheels.ShowSpeedsOnDashboard();
         
         switch(challengeNumber) {
             case -1: break;

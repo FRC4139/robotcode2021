@@ -131,7 +131,7 @@ public class ChallengeFour {
         }
         switch(driveType) {
             case ARCADE:
-                controller.diffDrive(inverseMultiplier * xController.getY(Hand.kLeft), inverseMultiplier * xController.getX(Hand.kLeft), driveType);
+                controller.diffDrive(-1 * inverseMultiplier * xController.getY(Hand.kLeft), inverseMultiplier * xController.getX(Hand.kLeft), driveType);
                 break;
             case TANK:
                 controller.diffDrive(inverseMultiplier * xController.getY(Hand.kLeft), inverseMultiplier * xController.getY(Hand.kRight), driveType);

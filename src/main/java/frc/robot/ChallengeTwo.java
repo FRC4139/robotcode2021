@@ -1,10 +1,12 @@
 package frc.robot;
 
+import java.util.ArrayList;
 
 import edu.wpi.first.wpilibj.XboxController;
 
 //uncomment ones you need
 import edu.wpi.first.wpilibj.GenericHID.Hand;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 // import edu.wpi.first.wpilibj.SPI;
 // import com.kauailabs.navx.frc.AHRS;
@@ -48,6 +50,8 @@ public class ChallengeTwo {
     private int path = 1;
     //this is the main controller class (which we have written before), which will call the update methods below. This is NOT an Xbox Controller
     private Controller controller;   
+    private ArrayList<ArrayList<AutonomousSegment>> pathSegments = new ArrayList<ArrayList<AutonomousSegment>>();
+    private SendableChooser pathSelector;
 
     /* 
         Instructions on how to get data from the robot:
@@ -70,6 +74,7 @@ public class ChallengeTwo {
 
     //this is the xbox controller which will be plugged into the drive laptop to control the robot
     private XboxController xController;
+    private boolean started = false;
 
     /* 
         The documentation for the xbox controller can be found here: https://first.wpi.edu/FRC/roborio/release/docs/java/edu/wpi/first/wpilibj/XboxController.html
@@ -95,6 +100,33 @@ public class ChallengeTwo {
         controller = cIn; 
         path = p;
         xController = controller.xcontroller;
+
+        pathSelector = new SendableChooser();
+        pathSelector.addOption("Path One (Barrel)", 1);
+        pathSelector.addOption("Path Two (Slalom)", 2);
+        pathSelector.addOption("Path Three (Bounce)", 3);
+
+        //createCircularAutonomousSegment(double radius, double angle, int direction, boolean rotation, double intakeSpeed, AutonomousSegment prev)
+        //createStraightAutonomousSegment(double length, int direction, double intakeSpeed, AutonomousSegment prev)
+        if (path == 1) {
+            ArrayList<AutonomousSegment> path1 = new ArrayList<AutonomousSegment>(); 
+            //add segments here
+
+
+            pathSegments.add(path1);
+        } else if (path == 2) {
+            ArrayList<AutonomousSegment> path2 = new ArrayList<AutonomousSegment>(); 
+            //add segments here
+
+
+            pathSegments.add(path2);
+        } else {
+            ArrayList<AutonomousSegment> path2 = new ArrayList<AutonomousSegment>(); 
+            //add segments here
+
+
+            pathSegments.add(path2);
+        }
     }
 
 
@@ -114,62 +146,85 @@ public class ChallengeTwo {
     public void UpdateAutonomous() {
         // Display useful information
         SmartDashboard.putNumber("Current Path", path);
+        SmartDashboard.putNumber("Path Length", pathSegments.size());
         SmartDashboard.putNumber("Current Segment", segment);
         SmartDashboard.putNumber("Total distance travelled (in)", getDistanceTravelled());
         SmartDashboard.putNumber("Angle Facing Real (deg)", controller.getAngleFacing());
         SmartDashboard.putNumber("Angle Facing Adjusted (rad)", getAngleFacing());
-        SmartDashboard.putNumber("current rt", CIRCLE_RADIUS);
-        SmartDashboard.putNumber("inner turn speed", INNER_TURN_DRIVE_SPEED);
-        if (path == 1) {
-            if (segment == 1) {
-                SetSpeedStraight();
-            } else if (segment == 2) {
-                SetSpeedClockwise(); 
-            } else if (segment == 3) {
-                SetSpeedStraight();
-            } else if (segment == 4) {
-                SetSpeedCounterClockwise(); 
-            } else if (segment == 5) {
-                SetSpeedStraight();
-            } else if (segment == 6) {
-                SetSpeedCounterClockwise(); 
-            } else if (segment == 7) {
-                SetSpeedStraight();
-            } else if (segment == 8) {
-                controller.setDriveSpeed(0, 0);
-            }
-        } else if (path == 2) {
-            if      (segment == 1) { SetSpeedStraight(); }
-            else if (segment == 2) { SetSpeedClockwise(); } 
-            else if (segment == 3) { SetSpeedStraight(); }
-            else if (segment == 4) { SetSpeedClockwise(); } 
-            else if (segment == 5) { SetSpeedStraight(); }
-            else if (segment == 6) { SetSpeedCounterClockwise(); } 
-            else if (segment == 7) { SetSpeedStraight();}
-            else if (segment == 8) { SetSpeedClockwise(); }
-            else if (segment == 9) { SetSpeedStraight();}
-            else if (segment == 10) { SetSpeedClockwise(); }
-            else if (segment == 11) { SetSpeedStraight(); } 
-            else if (segment == 12) { controller.setDriveSpeed(0, 0); }
-        } else if (path == 3) {
-            if      (segment == 1) { UpdateTurnVariables( R_T_ONE ); SetSpeedCounterClockwise(); }
-            else if (segment == 2) { UpdateTurnVariables( R_T_TWO ); SetSpeedCounterClockwise(); }
-            else if (segment == 3) { UpdateTurnVariables( R_T_THREE ); SetSpeedCounterClockwise(-1); controller.setDriveSpeed(0, 0);}
-            else if (segment == 4) { UpdateTurnVariables( R_T_FOUR ); SetSpeedCounterClockwise(-1); }
-            else if (segment == 5) { UpdateTurnVariables( R_T_FIVE ); SetSpeedCounterClockwise(-1);}
-            else if (segment == 6) { UpdateTurnVariables( R_T_SIX ); SetSpeedCounterClockwise();}
-            else if (segment == 7) { UpdateTurnVariables( R_T_SEVEN ); SetSpeedCounterClockwise();}
-            else if (segment == 8) { SetSpeedStraight();}
-            else if (segment == 9) { UpdateTurnVariables( R_T_NINE ); SetSpeedCounterClockwise();}
-            else if (segment == 10) {UpdateTurnVariables( R_T_TEN ); SetSpeedCounterClockwise(); }
-            else if (segment == 11) {UpdateTurnVariables( R_T_ELEVEN ); SetSpeedCounterClockwise(-1);  }
-            else if (segment == 12) {UpdateTurnVariables( R_T_TWELVE ); SetSpeedCounterClockwise(-1);  }
-            else if (segment == 13) {controller.setDriveSpeed(0, 0);}
-        } else {
-            SmartDashboard.putBoolean("SOMETHING WENT WRONG", true);
-        }
+        SmartDashboard.putNumber("Current Circle Radius (in)", CIRCLE_RADIUS);
+        SmartDashboard.putNumber("Inner Turn Speed", INNER_TURN_DRIVE_SPEED);
+
+        path = (int) pathSelector.getSelected();
+
         
-        checkSegmentIncrement();
+        if (!started) { 
+            pathSegments.get(path).get(0).SetSpeeds(controller);
+            started = true;
+        }
+
+        if (pathSegments.get(path).get(segment - 1).IsSegmentComplete(getDistanceTravelled(), getAngleFacing())) {
+            segment++;
+            pathSegments.get(path).get(segment - 1).SetSpeeds(controller);
+        }
+
+        if (segment == pathSegments.size()) { 
+            controller.setDriveSpeed(0, 0);
+            controller.setIntakeSpeed(0);
+            return;
+        }
+
+
+
+        // if (path == 1) {
+        //     if (segment == 1) {
+        //         SetSpeedStraight();
+        //     } else if (segment == 2) {
+        //         SetSpeedClockwise(); 
+        //     } else if (segment == 3) {
+        //         SetSpeedStraight();
+        //     } else if (segment == 4) {
+        //         SetSpeedCounterClockwise(); 
+        //     } else if (segment == 5) {
+        //         SetSpeedStraight();
+        //     } else if (segment == 6) {
+        //         SetSpeedCounterClockwise(); 
+        //     } else if (segment == 7) {
+        //         SetSpeedStraight();
+        //     } else if (segment == 8) {
+        //         controller.setDriveSpeed(0, 0);
+        //     }
+        // } else if (path == 2) {
+        //     if      (segment == 1) { SetSpeedStraight(); }
+        //     else if (segment == 2) { SetSpeedClockwise(); } 
+        //     else if (segment == 3) { SetSpeedStraight(); }
+        //     else if (segment == 4) { SetSpeedClockwise(); } 
+        //     else if (segment == 5) { SetSpeedStraight(); }
+        //     else if (segment == 6) { SetSpeedCounterClockwise(); } 
+        //     else if (segment == 7) { SetSpeedStraight();}
+        //     else if (segment == 8) { SetSpeedClockwise(); }
+        //     else if (segment == 9) { SetSpeedStraight();}
+        //     else if (segment == 10) { SetSpeedClockwise(); }
+        //     else if (segment == 11) { SetSpeedStraight(); } 
+        //     else if (segment == 12) { controller.setDriveSpeed(0, 0); }
+        // } else if (path == 3) {
+        //     if      (segment == 1) { UpdateTurnVariables( R_T_ONE ); SetSpeedCounterClockwise(); }
+        //     else if (segment == 2) { UpdateTurnVariables( R_T_TWO ); SetSpeedCounterClockwise(); }
+        //     else if (segment == 3) { UpdateTurnVariables( R_T_THREE ); SetSpeedCounterClockwise(-1); controller.setDriveSpeed(0, 0);}
+        //     else if (segment == 4) { UpdateTurnVariables( R_T_FOUR ); SetSpeedCounterClockwise(-1); }
+        //     else if (segment == 5) { UpdateTurnVariables( R_T_FIVE ); SetSpeedCounterClockwise(-1);}
+        //     else if (segment == 6) { UpdateTurnVariables( R_T_SIX ); SetSpeedCounterClockwise();}
+        //     else if (segment == 7) { UpdateTurnVariables( R_T_SEVEN ); SetSpeedCounterClockwise();}
+        //     else if (segment == 8) { SetSpeedStraight();}
+        //     else if (segment == 9) { UpdateTurnVariables( R_T_NINE ); SetSpeedCounterClockwise();}
+        //     else if (segment == 10) {UpdateTurnVariables( R_T_TEN ); SetSpeedCounterClockwise(); }
+        //     else if (segment == 11) {UpdateTurnVariables( R_T_ELEVEN ); SetSpeedCounterClockwise(-1);  }
+        //     else if (segment == 12) {UpdateTurnVariables( R_T_TWELVE ); SetSpeedCounterClockwise(-1);  }
+        //     else if (segment == 13) {controller.setDriveSpeed(0, 0);}
+        // } else {
+        //     SmartDashboard.putBoolean("SOMETHING WENT WRONG", true);
+        // }
+        
+        // checkSegmentIncrement();
     }
 
     private void SetSpeedClockwise() { controller.setDriveSpeed(OUTER_TURN_DRIVE_SPEED, INNER_TURN_DRIVE_SPEED); }
@@ -184,17 +239,12 @@ public class ChallengeTwo {
     //this is called every 20 milliseconds during teleop (manually controlled by human with xboxcontroller)
     public void UpdateTeleop() {
 
-        /* 
-        
-            Explain your controls here, so the driver knows what to do. 
-                > Drive the robot using the left and right joysticks to control the speed of their respective wheels. 
-        
-        */
         SmartDashboard.putNumber("Current Path", path);
         SmartDashboard.putNumber("Current Segment", segment);
         SmartDashboard.putNumber("Total distance travelled (in)", getDistanceTravelled());
         SmartDashboard.putNumber("Angle Facing Real (deg)", controller.getAngleFacing());
         SmartDashboard.putNumber("Angle Facing Adjusted (rad)", getAngleFacing());
+        path = (int) pathSelector.getSelected();
         if (xController.getAButtonPressed()) {
             controller.calibrate();
         }
@@ -433,5 +483,43 @@ public class ChallengeTwo {
     private void UpdateTurnVariables(double newRadius) {
         CIRCLE_RADIUS = newRadius;
         INNER_TURN_DRIVE_SPEED = (CIRCLE_RADIUS - DISTANCE_PIVOT_TO_WHEEL) / (CIRCLE_RADIUS + DISTANCE_PIVOT_TO_WHEEL) * OUTER_TURN_DRIVE_SPEED;
+    }
+
+    private AutonomousSegment createCircularAutonomousSegment(double radius, double angle, int direction, boolean rotation, double intakeSpeed, AutonomousSegment prev) {
+
+        boolean distanceGreater = true;
+        if (direction == -1) distanceGreater = false;
+
+        
+
+        if ((rotation && direction == 1) || (!rotation && direction == -1)) {
+            //cw forward = ccw backwards = left faster
+            return new AutonomousSegment((radius + DISTANCE_PIVOT_TO_WHEEL)* Math.abs(angle) * direction, 
+                                        angle * -1, 
+                                        prev,
+                                        new double[] {OUTER_TURN_DRIVE_SPEED * direction, GetInnerTurnSpeed(radius) * direction, intakeSpeed}, 
+                                        distanceGreater,
+                                        !rotation); 
+        } else {
+            return new AutonomousSegment((radius - DISTANCE_PIVOT_TO_WHEEL) * Math.abs(angle) * direction, 
+                                        angle, 
+                                        prev,
+                                        new double[] {GetInnerTurnSpeed(radius) * direction, OUTER_TURN_DRIVE_SPEED*direction, intakeSpeed}, 
+                                        distanceGreater,
+                                        !rotation); 
+        }
+        
+    }
+
+    private AutonomousSegment createStraightAutonomousSegment(double length, int direction, double intakeSpeed, AutonomousSegment prev) {
+        boolean distanceGreater = true;
+        if (direction == -1) distanceGreater = false;
+
+        return new AutonomousSegment(length, 0, prev, new double[] { MAX_DRIVE_SPEED * direction, MAX_DRIVE_SPEED * direction, intakeSpeed}, distanceGreater, false);
+    }
+
+    private double GetInnerTurnSpeed(double CIRCLE_RADIUS) {
+
+        return (CIRCLE_RADIUS - DISTANCE_PIVOT_TO_WHEEL) / (CIRCLE_RADIUS + DISTANCE_PIVOT_TO_WHEEL) * OUTER_TURN_DRIVE_SPEED;
     }
 }

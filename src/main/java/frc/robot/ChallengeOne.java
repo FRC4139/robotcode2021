@@ -1,12 +1,12 @@
 package frc.robot;
 
 import java.util.ArrayList;
-import java.util.List;
+
 
 import edu.wpi.first.wpilibj.XboxController;
 
 //uncomment ones you need
-import edu.wpi.first.wpilibj.XboxController;
+
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 // import edu.wpi.first.wpilibj.SPI;
@@ -22,18 +22,13 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class ChallengeOne {
 
     //put constants here
-    private static double FEEDER_SPEED = -0.4;
-    private static double ZERO = 0;
-    private static double INTAKE_SPEED = -0.85;
+    private static double INTAKE_SPEED = 0.85;
     
 
     private static final double DISTANCE_PIVOT_TO_WHEEL = 22.5 / 2;
 
     private static final double MAX_DRIVE_SPEED = 0.8;
     private static final double OUTER_TURN_DRIVE_SPEED = 0.6; 
-
-    private static final double[] STRAIGHT_INTAKE_OFF = { MAX_DRIVE_SPEED, MAX_DRIVE_SPEED, 0};
-    private static final double[] STRAIGHT_INTAKE_ON = { MAX_DRIVE_SPEED, MAX_DRIVE_SPEED, INTAKE_SPEED};
 
     private static final double TURN_RADIUS = 20.0;
 
@@ -125,7 +120,7 @@ public class ChallengeOne {
 
             double ex = 90 - TURN_RADIUS * Math.cos(Math.atan(1.58579));
             double ey = 120 - TURN_RADIUS * Math.sin(Math.atan(1.58579));
-            double distB1e = Math.sqrt(Math.pow(B1x-ex,2)+Math.pow((B1y-ey),2));
+            //double distB1e = Math.sqrt(Math.pow(B1x-ex,2)+Math.pow((B1y-ey),2));
 
             double ax = 30;
             double ay = B1y + TURN_RADIUS / Math.cos(Math.atan2(B1y-ey, ex-B1x)); // starting x-coord
@@ -249,11 +244,11 @@ public class ChallengeOne {
         SmartDashboard.putNumber("path size", path.size());
         SmartDashboard.putBoolean("started", started);
         
-        // if (currentSegment == path.size()) { 
-        //     controller.setDriveSpeed(0, 0);
-        //     controller.setIntakeSpeed(0);
-        //     return;
-        // }
+        if (currentSegment == path.size()) { 
+            controller.setDriveSpeed(0, 0);
+            controller.setIntakeSpeed(0);
+            return;
+        }
         if (!started) { 
             path.get(0).SetSpeeds(controller);
             started = true;
@@ -276,18 +271,8 @@ public class ChallengeOne {
         SmartDashboard.putNumber("Compass Offset", COMPASS_OFFSET);
         SmartDashboard.putNumber("Compass Heading", getCompassHeading());
 
-        /* 
-        
-            Explain your controls here, so the driver knows what to do. 
-                > Drive the robot using the left and right joysticks to control the speed of their respective wheels. 
-        
-        */
-
-        // This is a very basic way of driving using two joysticks. Think about other ways the robot can be driven. Which would be the easiest and/or most efficient for the driver?
-        //controller.setDriveSpeed(xController.getY(Hand.kLeft), xController.getY(Hand.kRight));
-
-        if (xController.getBumper(Hand.kLeft)) { controller.calibrate(); SmartDashboard.putBoolean("key", true);}
-        if (Math.abs(xController.getTriggerAxis(Hand.kLeft)) > 0.05) COMPASS_OFFSET += xController.getTriggerAxis(Hand.kLeft);
+        if (xController.getBumper(Hand.kLeft)) controller.calibrate(); 
+        if (Math.abs(xController.getY(Hand.kLeft)) > 0.05) COMPASS_OFFSET += xController.getY(Hand.kLeft);
 
     }
 
