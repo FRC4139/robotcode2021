@@ -117,7 +117,9 @@ public class ChallengeTwo {
         SmartDashboard.putNumber("Current Segment", segment);
         SmartDashboard.putNumber("Total distance travelled (in)", getDistanceTravelled());
         SmartDashboard.putNumber("Angle Facing Real (deg)", controller.getAngleFacing());
-        SmartDashboard.putNumber("Angle Facing Adjusted (deg)", getAngleFacing());
+        SmartDashboard.putNumber("Angle Facing Adjusted (rad)", getAngleFacing());
+        SmartDashboard.putNumber("current rt", CIRCLE_RADIUS);
+        SmartDashboard.putNumber("inner turn speed", INNER_TURN_DRIVE_SPEED);
         if (path == 1) {
             if (segment == 1) {
                 SetSpeedStraight();
@@ -152,7 +154,7 @@ public class ChallengeTwo {
         } else if (path == 3) {
             if      (segment == 1) { UpdateTurnVariables( R_T_ONE ); SetSpeedCounterClockwise(); }
             else if (segment == 2) { UpdateTurnVariables( R_T_TWO ); SetSpeedCounterClockwise(); }
-            else if (segment == 3) { UpdateTurnVariables( R_T_THREE ); SetSpeedCounterClockwise(-1);}
+            else if (segment == 3) { UpdateTurnVariables( R_T_THREE ); SetSpeedCounterClockwise(-1); controller.setDriveSpeed(0, 0);}
             else if (segment == 4) { UpdateTurnVariables( R_T_FOUR ); SetSpeedCounterClockwise(-1); }
             else if (segment == 5) { UpdateTurnVariables( R_T_FIVE ); SetSpeedCounterClockwise(-1);}
             else if (segment == 6) { UpdateTurnVariables( R_T_SIX ); SetSpeedCounterClockwise();}
@@ -162,6 +164,7 @@ public class ChallengeTwo {
             else if (segment == 10) {UpdateTurnVariables( R_T_TEN ); SetSpeedCounterClockwise(); }
             else if (segment == 11) {UpdateTurnVariables( R_T_ELEVEN ); SetSpeedCounterClockwise(-1);  }
             else if (segment == 12) {UpdateTurnVariables( R_T_TWELVE ); SetSpeedCounterClockwise(-1);  }
+            else if (segment == 13) {controller.setDriveSpeed(0, 0);}
         } else {
             SmartDashboard.putBoolean("SOMETHING WENT WRONG", true);
         }
@@ -187,10 +190,14 @@ public class ChallengeTwo {
                 > Drive the robot using the left and right joysticks to control the speed of their respective wheels. 
         
         */
-
-        // This is a very basic way of driving using two joysticks. Think about other ways the robot can be driven. Which would be the easiest and/or most efficient for the driver?
-        controller.setDriveSpeed(xController.getY(Hand.kLeft), xController.getY(Hand.kRight));
-        if (xController.getBumper(Hand.kLeft)) { controller.calibrate(); }
+        SmartDashboard.putNumber("Current Path", path);
+        SmartDashboard.putNumber("Current Segment", segment);
+        SmartDashboard.putNumber("Total distance travelled (in)", getDistanceTravelled());
+        SmartDashboard.putNumber("Angle Facing Real (deg)", controller.getAngleFacing());
+        SmartDashboard.putNumber("Angle Facing Adjusted (rad)", getAngleFacing());
+        if (xController.getAButtonPressed()) {
+            controller.calibrate();
+        }
 
     }
 

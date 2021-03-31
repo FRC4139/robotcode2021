@@ -48,7 +48,7 @@ public class Controller{
     private ChallengeFour cFour;
     private ChallengeFive cFive;
     //-1 = testing, 1 = challenge one, 2 = challenge 2... 5 = challenge 5
-    private int challengeNumber = 4; 
+    private int challengeNumber = 1; 
 
 
 
@@ -58,8 +58,8 @@ public class Controller{
         m_ultrasonic = new AnalogInput(0);
       
   
-        // fL, fR, bL, bR
-        wheels = new Wheels(30, 31, 32, 33);
+        // fL, bL, fR, bR
+        wheels = new Wheels(33, 34, 31, 32);
         xcontroller = new XboxController(0);
 
         shooter = new Shooter(shooterPortOne, shooterPortTwo);
@@ -76,11 +76,11 @@ public class Controller{
         hookUp = false;
 
         cOne = new ChallengeOne(this);
-        cTwo = new ChallengeTwo(this, 1);
+        cTwo = new ChallengeTwo(this, 3);
         cThree = new ChallengeThree(this);
         cFour = new ChallengeFour(this);
         cFive = new ChallengeFive(this);
-
+        
     }
     
     public void UpdateTeleop() {
@@ -197,6 +197,8 @@ public class Controller{
 
     public void calibrate() {
         ahrs.calibrate();
+        ahrs.zeroYaw();
+        wheels.resetEncoders();
     }
 
 

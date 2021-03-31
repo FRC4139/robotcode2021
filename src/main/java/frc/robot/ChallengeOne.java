@@ -76,7 +76,7 @@ public class ChallengeOne {
 
     private int currentSegment = 1;
     private String whichPath;
-
+    private boolean started = false;
 
 
     // Methods
@@ -85,7 +85,7 @@ public class ChallengeOne {
     public ChallengeOne(Controller cIn) {
         controller = cIn; 
         xController = controller.xcontroller;
-
+        SmartDashboard.putBoolean("started challenge 1", false);
         //determine which path we are on 
         if (getCompassHeading() < 1 && getCompassHeading() > -1) {
             whichPath = "RED A";
@@ -246,21 +246,23 @@ public class ChallengeOne {
         SmartDashboard.putNumber("Angle Facing Adjusted (deg)", getAngleFacing());
         SmartDashboard.putNumber("Compass Offset", COMPASS_OFFSET);
         SmartDashboard.putNumber("Compass Heading", getCompassHeading());
-        if (currentSegment == path.size()) { 
-            controller.setDriveSpeed(0, 0);
-            controller.setIntakeSpeed(0);
-            return;
-        }
+        SmartDashboard.putNumber("path size", path.size());
+        SmartDashboard.putBoolean("started", started);
         
+        // if (currentSegment == path.size()) { 
+        //     controller.setDriveSpeed(0, 0);
+        //     controller.setIntakeSpeed(0);
+        //     return;
+        // }
+        if (!started) { 
+            path.get(0).SetSpeeds(controller);
+            started = true;
+        }
         if (path.get(currentSegment - 1).IsSegmentComplete(getDistanceTravelled(), getAngleFacing())) {
             currentSegment++;
-            if (currentSegment == path.size()) { 
-                controller.setDriveSpeed(0, 0);
-                controller.setIntakeSpeed(0);
-                return;
-            }
             path.get(currentSegment - 1).SetSpeeds(controller);
         }
+        
     }
 
 
@@ -282,9 +284,9 @@ public class ChallengeOne {
         */
 
         // This is a very basic way of driving using two joysticks. Think about other ways the robot can be driven. Which would be the easiest and/or most efficient for the driver?
-        controller.setDriveSpeed(xController.getY(Hand.kLeft), xController.getY(Hand.kRight));
+        //controller.setDriveSpeed(xController.getY(Hand.kLeft), xController.getY(Hand.kRight));
 
-        if (xController.getBumper(Hand.kLeft)) { controller.calibrate(); }
+        if (xController.getBumper(Hand.kLeft)) { controller.calibrate(); SmartDashboard.putBoolean("key", true);}
         if (Math.abs(xController.getTriggerAxis(Hand.kLeft)) > 0.05) COMPASS_OFFSET += xController.getTriggerAxis(Hand.kLeft);
 
     }

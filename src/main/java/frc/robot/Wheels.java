@@ -60,8 +60,8 @@ public class Wheels {
     // Negative speed turns wheels backwards
     public void drive(double leftSpeed, double rightSpeed) {
 
-        leftSpeed *= 0.8;
-        rightSpeed *= 0.8;
+        leftSpeed *= 0.5;
+        rightSpeed *= 0.5;
         if(!inverseState)
         {
             //if inversState is true, reverse the speeds and call drive 
@@ -86,10 +86,10 @@ public class Wheels {
     public void diffDrive(double speed1, double speed2, DriveType dType) {
         switch(dType) {
             case ARCADE:
-                wheels.arcadeDrive(speed1 * 0.8, speed2 * 0.8); // speed scaling may need to be adjusted as we can't test in person right now
+                wheels.arcadeDrive(-speed1 * 0.5, -speed2 * 0.5); // speed scaling may need to be adjusted as we can't test in person right now
                 break;
             case TANK:
-                wheels.tankDrive(speed1 * 0.9, speed2 * 0.9);
+                wheels.tankDrive(speed1 * 0.5, speed2 * 0.5);
                 break;
         }
     }
@@ -98,4 +98,7 @@ public class Wheels {
     {
         inverseState = !inverseState;
     }       //reverses inverse everytime pressed
+    public void resetEncoders() {
+        frontLeft.getSensorCollection().setIntegratedSensorPosition(0, 0);
+    }
 }
