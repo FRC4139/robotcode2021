@@ -1,9 +1,6 @@
 package frc.robot;
 
-import com.ctre.phoenix.Logger;
-
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.Wheels.DriveType;
 
 public class AutonomousSegment {
     public double length = 0;
@@ -47,15 +44,15 @@ public class AutonomousSegment {
 
 
     public void SetSpeeds(Controller c) {
-        SmartDashboard.putBoolean("started challenge 1", true);
-        SmartDashboard.putNumber("zz", c.getAngleFacing());
-        c.diffDrive(speeds[0], speeds[1], DriveType.TANK);
+        System.out.println("Moving onto next segment.");
+
+        c.setDriveSpeed(speeds[0], speeds[1]);
         c.setIntakeSpeed(speeds[2]);
     }
 
     public Boolean IsSegmentComplete(double dist, double angle) {
-        SmartDashboard.putNumber("comparing to dist", dist / totalLength);
-        SmartDashboard.putNumber("compareing to angle", angle);
+        SmartDashboard.putString("Segment Progress (Distance)", 100 * dist / totalLength + "%");
+        SmartDashboard.putString("Segment Progress (Angle)", 100 * angle / totalAngleChange + "%");
         if (distanceGreater) {
             if (dist < totalLength) return false;
         } else {

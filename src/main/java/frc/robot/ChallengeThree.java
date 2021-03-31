@@ -3,9 +3,7 @@ package frc.robot;
 import edu.wpi.first.wpilibj.XboxController;
 
 //uncomment ones you need
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 // import edu.wpi.first.wpilibj.SPI;
 // import com.kauailabs.navx.frc.AHRS;
 // import edu.wpi.first.wpilibj.DriverStation;
@@ -20,8 +18,7 @@ import frc.robot.Wheels.DriveType;
 public class ChallengeThree {
 
     //put constants here
-    private static double FEEDER_SPEED = -0.4;
-    private static double ZERO = 0;
+
 
     //put variables here
 

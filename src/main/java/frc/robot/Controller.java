@@ -1,15 +1,12 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.GenericHID.Hand;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 import edu.wpi.first.wpilibj.SPI;
 import com.kauailabs.navx.frc.AHRS;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.Servo;
-import edu.wpi.first.wpilibj.Timer;
+
 
 public class Controller{
     // THE VALUES FOR THE DOUBLES BELOW NEED TO BE CONFIGURED MANUALLY
@@ -22,9 +19,7 @@ public class Controller{
 
     private Intake intake;
     private int intakePort = 2;
-    
-    private int hookPort = 9;
-    private int hookPortTwo = 10;
+
     private int shooterPortOne = 7;
     private int shooterPortTwo = 4;
 
@@ -34,8 +29,7 @@ public class Controller{
     private AHRS ahrs;
     private AnalogInput m_ultrasonic;
 
-    private Boolean hookUp; 
-    private HookExtension hook;
+
 
     private VisionComp visionComp;
 
@@ -71,9 +65,6 @@ public class Controller{
 
         intake = new Intake(intakePort);
 
-        hook = new HookExtension(hookPort, hookPortTwo);
-
-        hookUp = false;
 
         cOne = new ChallengeOne(this);
         cTwo = new ChallengeTwo(this, 3);

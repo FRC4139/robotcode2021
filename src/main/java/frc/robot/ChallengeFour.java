@@ -3,7 +3,6 @@ package frc.robot;
 import edu.wpi.first.wpilibj.XboxController;
 
 //uncomment ones you need
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Wheels.DriveType;
@@ -30,8 +29,7 @@ public class ChallengeFour {
 
     //this is the main controller class (which we have written before), which will call the update methods below. This is NOT an Xbox Controller
     private Controller controller;   
-    private double leftStickX;
-    private double leftStickY;
+
     private double encoderDistance; 
     private int inverseMultiplier = 1; 
 
@@ -109,8 +107,7 @@ public class ChallengeFour {
         */
 
         // Get joystick directions
-        leftStickX = xController.getX(Hand.kLeft);
-        leftStickY = xController.getY(Hand.kLeft);
+
         encoderDistance = controller.getDistanceTravelled("fL"); // change encoder position accordingly
 
         // SmartDashboard values
