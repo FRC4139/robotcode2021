@@ -44,6 +44,7 @@ public class ChallengeTwo {
     //------------------------------------------------------
     //put variables here
     private double CIRCLE_RADIUS = 20.0; // changed throughout path 3 code 
+    private double TURN_RADIUS = 20.0; //for the sake of consistency
     private double INNER_TURN_DRIVE_SPEED = (CIRCLE_RADIUS - DISTANCE_PIVOT_TO_WHEEL) / (CIRCLE_RADIUS + DISTANCE_PIVOT_TO_WHEEL) * OUTER_TURN_DRIVE_SPEED; 
 
     private int segment = 1; 
@@ -110,22 +111,118 @@ public class ChallengeTwo {
         //createStraightAutonomousSegment(double length, int direction, double intakeSpeed, AutonomousSegment prev)
         if (path == 1) {
             ArrayList<AutonomousSegment> path1 = new ArrayList<AutonomousSegment>(); 
-            //add segments here
 
+            //start robot at (60, 60 + TURN_RADIUS) facing 0 radians
+
+            //variables defined from the geogebra diagram
+
+            double d5x = 150;
+            double d5y = 60;
+            double b8x = 240;
+            double b8y = 120;
+            double distD5B8 = Math.sqrt(Math.pow(d5x-b8x,2) + Math.pow(d5y-b8y,2));
+
+            double d10x = 300;
+            double d10y = 60;
+            double distB8D10 = Math.sqrt(Math.pow(d10x-b8x,2) + Math.pow(d10y-b8y,2));
+
+            path1.add(createStraightAutonomousSegment(90, 1, 0, new AutonomousSegment(false)));
+            path1.add(createCircularAutonomousSegment(TURN_RADIUS, 2.5 * Math.PI - Math.acos(2* TURN_RADIUS / distD5B8) - Math.atan2(b8y-d5y,b8x-d5x), 1, true, 0, path1.get(path1.size() - 1)));
+            path1.add(createStraightAutonomousSegment(Math.sin(Math.acos(2* TURN_RADIUS / distD5B8)) * distD5B8, 1, 0, path1.get(path1.size() - 1)));
+            path1.add(createCircularAutonomousSegment(TURN_RADIUS, 2 * Math.PI - (Math.atan2(b8y-d5y,b8x-d5x) + Math.PI/4 - Math.asin(2*TURN_RADIUS/distD5B8)) , 1, false, 0, path1.get(path1.size()-1)));
+            path1.add(createStraightAutonomousSegment(distB8D10, 1, 0, path1.get(path1.size() - 1)));
+            path1.add(createCircularAutonomousSegment(TURN_RADIUS, 1.25 * Math.PI , 1, false, 0, path1.get(path1.size() - 1)));
+            path1.add(createStraightAutonomousSegment(240, 1, 0, path1.get(path1.size() - 1)));
+
+            path1.add(createStraightAutonomousSegment(0, 1, 0, path1.get(path1.size()-1))); //increase 0 if robot is stopping too soon
 
             pathSegments.add(path1);
         } else if (path == 2) {
             ArrayList<AutonomousSegment> path2 = new ArrayList<AutonomousSegment>(); 
-            //add segments here
+
+            //start robot at (60, 60 - TURN_RADIUS) facing 0 radians
+
+            //variables defined from the geogebra diagram
+
+            double alpha = Math.PI/2 - Math.acos(2 * TURN_RADIUS / 60);
+
+            path2.add(createCircularAutonomousSegment(TURN_RADIUS, alpha, 1, false, 0, new AutonomousSegment(false)));
+            path2.add(createStraightAutonomousSegment(60 * Math.cos(alpha) , 1, 0, path2.get(path2.size() - 1)));
+            path2.add(createCircularAutonomousSegment(TURN_RADIUS, alpha, 1, true, 0, path2.get(path2.size()-1)));
+            path2.add(createStraightAutonomousSegment(120, 1, 0, path2.get(path2.size()-1)));
+            path2.add(createCircularAutonomousSegment(TURN_RADIUS, alpha, 1, true, 0, path2.get(path2.size()-1)));
+            path2.add(createStraightAutonomousSegment(60 * Math.cos(alpha) , 1, 0, path2.get(path2.size() - 1)));
+            path2.add(createCircularAutonomousSegment(TURN_RADIUS, Math.PI + 2*alpha, 1, false, 0, path2.get(path2.size()-1)));
+            path2.add(createStraightAutonomousSegment(60 * Math.cos(alpha) , 1, 0, path2.get(path2.size() - 1)));
+            path2.add(createCircularAutonomousSegment(TURN_RADIUS, alpha, 1, true, 0, path2.get(path2.size()-1)));
+            path2.add(createStraightAutonomousSegment(120, 1, 0, path2.get(path2.size()-1)));
+            path2.add(createCircularAutonomousSegment(TURN_RADIUS, alpha, 1, true, 0, path2.get(path2.size()-1)));
+            path2.add(createStraightAutonomousSegment(60 * Math.cos(alpha) , 1, 0, path2.get(path2.size() - 1)));
+            path2.add(createCircularAutonomousSegment(TURN_RADIUS, alpha, 1, false, 0, path2.get(path2.size()-1)));
+
+            path2.add(createStraightAutonomousSegment(0, 1, 0, path2.get(path2.size()-1))); //increase 0 if robot is stopping too soon
 
 
             pathSegments.add(path2);
         } else {
-            ArrayList<AutonomousSegment> path2 = new ArrayList<AutonomousSegment>(); 
-            //add segments here
+            ArrayList<AutonomousSegment> path3 = new ArrayList<AutonomousSegment>(); 
 
+            //start robot at (60, 120 - TURN_RADIUS) facing 0 radians
 
-            pathSegments.add(path2);
+            //variables defined from the geogebra diagram
+
+            double fx = 90 - (1800 - Math.pow(TURN_RADIUS,2))/(60 - 2*TURN_RADIUS);
+            double fy = 150;
+            double fradius = (1800 - Math.pow(TURN_RADIUS,2))/(60 - 2*TURN_RADIUS);
+
+            double bx = 60;
+            double by = 120;
+
+            double rx = 90 + (11700-Math.pow(TURN_RADIUS,2))/(120-2*TURN_RADIUS);
+            double ry = 150;
+            double rradius = (11700-Math.pow(TURN_RADIUS,2))/(120-2*TURN_RADIUS);
+
+            double ox = 150;
+            double oy = 60;
+
+            double ux = 180 - (3400-Math.pow(TURN_RADIUS,2))/(60-2*TURN_RADIUS);
+            double uy = 110;
+            double uradius = (3400-Math.pow(TURN_RADIUS,2))/(60-2*TURN_RADIUS);
+
+            double wx = 180 + uradius;
+            double wy = 110;
+            double wradius = uradius;
+
+            double px = 210;
+            double py = 60;
+
+            double c1x = 270 - (9000-Math.pow(TURN_RADIUS,2))/(60-2*TURN_RADIUS);
+            double c1y = 150;
+            double c1radius = (9000-Math.pow(TURN_RADIUS,2))/(60-2*TURN_RADIUS);
+
+            double qx = 240;
+            double qy = 60;
+
+            path3.add(createCircularAutonomousSegment(TURN_RADIUS, Math.atan2(bx-fx,fy-by), 1, false, 0, new AutonomousSegment(false)));
+            path3.add(createCircularAutonomousSegment(fradius, Math.PI/4 + Math.atan2(fy-by,bx-fx), 1, false, 0, path3.get(path3.size()-1)));
+
+            path3.add(createCircularAutonomousSegment(rradius, Math.atan2(ry-oy,rx-ox), -1, false, 0, path3.get(path3.size()-1)));
+            path3.add(createCircularAutonomousSegment(TURN_RADIUS, Math.PI - (Math.atan2(ry-oy,rx-ox) + Math.atan2(uy-oy,ox-ux)), -1, false, 0, path3.get(path3.size()-1)));
+            path3.add(createCircularAutonomousSegment(uradius, Math.atan2(uy-oy,ox-ux), -1, false, 0, path3.get(path3.size()-1)));
+
+            path3.add(createCircularAutonomousSegment(wradius, Math.atan2(wy-py,wx-px), 1, false, 0, path3.get(path3.size()-1)));
+            path3.add(createCircularAutonomousSegment(TURN_RADIUS, Math.PI/2 - Math.atan2(wy-py,wx-px), 1, false, 0, path3.get(path3.size()-1)));
+            path3.add(createStraightAutonomousSegment(30, 1, 0, path3.get(path3.size()-1)));
+            path3.add(createCircularAutonomousSegment(TURN_RADIUS, Math.PI/2 - Math.atan2(c1y-qy,qx-c1x), 1, false, 0, path3.get(path3.size()-1)));
+            path3.add(createCircularAutonomousSegment(c1radius, Math.atan2(c1y-qy,qx-c1x), 1, false, 0, path3.get(path3.size()-1)));
+
+            //symmetric with first two segments
+            path3.add(createCircularAutonomousSegment(fradius, Math.PI/4 + Math.atan2(fy-by,bx-fx), -1, false, 0, path3.get(path3.size()-1)));
+            path3.add(createCircularAutonomousSegment(TURN_RADIUS, Math.atan2(bx-fx,fy-by), -1, false, 0, path3.get(path3.size()-1)));
+
+            path3.add(createStraightAutonomousSegment(0, -1, 0, path3.get(path3.size()-1))); //increase 0 if robot is stopping too soon
+
+            pathSegments.add(path3);
         }
     }
 
