@@ -21,8 +21,15 @@ public class ChallengeFive {
     //put constants here
     private static double FEEDER_SPEED = -0.4;
     private static double ZERO = 0;
-
+    private static double INTAKE_SPEED = 0.7;
+    private static double SHOOTER_SPEED = 0.5;
+   
     //put variables here
+    private double rightStickX;
+    private double rightStickY;
+    private double encoderDistance;
+    private double angle;
+    private double ultraSonic;
 
     //this is the main controller class (which we have written before), which will call the update methods below. This is NOT an Xbox Controller
     private Controller controller;   
@@ -31,7 +38,7 @@ public class ChallengeFive {
         Instructions on how to get data from the robot:
             controller.getAngleFacing() returns a double indicating which angle (in degrees) the robot is facing
             controller.getUltraSonicReading() returns a double indicating the ultrasonic sensor reading in INCHES
-            controller.getDistanceTravelled("fL") returns a double indicating the distance travelled by the front left wheel in FEET
+          (check)  controller.getDistanceTravelled("fL") returns a double indicating the distance travelled by the front left wheel in FEET
 
         Instruction on how to control the robot:
             controller.setDriveSpeed(double leftSpeed, double rightSpeed) sets the speed of the right and left wheels. Only the wheels in the back will be powered. 
@@ -53,7 +60,7 @@ public class ChallengeFive {
         The documentation for the xbox controller can be found here: https://first.wpi.edu/FRC/roborio/release/docs/java/edu/wpi/first/wpilibj/XboxController.html
         Example implementation can be seen in Controller.java
     
-    */
+    */ 
 
 
 
@@ -93,10 +100,83 @@ public class ChallengeFive {
                 > Drive the robot using the left and right joysticks to control the speed of their respective wheels. 
         
         */
-
+       
         // This is a very basic way of driving using two joysticks. Think about other ways the robot can be driven. Which would be the easiest and/or most efficient for the driver?
         controller.setDriveSpeed(xController.getY(Hand.kLeft), xController.getY(Hand.kRight));
+        
+        rightStickX = xController.getX(Hand.kRight);
+        rightStickY = xController.getY(Hand.kRight);
+        encoderDistance = controller.getDistanceTravelled("fL"); // change encoder position accordingly
+        angle = controller.getAngleFacing();
+        ultraSonic = controller.getUltraSonicReading();
+        SmartDashboard.putNumber("Distance travelled from start is: ", encoderDistance);
+        SmartDashboard.putNumber("Current speed of the shooter: ", SHOOTER_SPEED); 
+        SmartDashboard.putNumber("Angle is: ", angle);
+        SmartDashboard.putNumber("Ultra Sonic Reading is: " , + ultraSonic);
 
+
+//right joytick-the intake. Note-I am not sure
+//whether not assinging the values at the beginning
+//will mess the code up
+
+//intake moves up when right joystick is up
+if(rightStickY > 0)
+{
+    controller.setIntakeSpeed(INTAKE_SPEED);
+}
+else
+{
+    controller.setIntakeSpeed(ZERO);
+}
+//intake moves down when right joystick is down
+if(rightStickY < 0)
+{
+    controller.setIntakeSpeed(INTAKE_SPEED);
+}
+else
+{
+controller.setIntakeSpeed(ZERO);
+}
+
+//Y button-set to high shooter speed
+
+    if(xController.getYButtonPressed())
+        {
+            SHOOTER_SPEED += 0.3;
+         }
+        if(xController.getYButtonReleased())
+             {
+                   SHOOTER_SPEED -= 0.3;
+            }
+
+//B button-set to low shooter speed
+
+if(xController.getBButtonPressed())
+    {
+        SHOOTER_SPEED -= 0.3;
+    }
+if(xController.getBButtonReleased())
+    {
+        SHOOTER_SPEED += 0.3;
+    }
+
+        //Left Trigger-Activates the feeder motor
+        if(xController.getTriggerAxis(Hand.kLeft) > 0) 
+            {
+            controller.setFeederSpeed(FEEDER_SPEED);
+             }
+       else{
+             controller.setFeederSpeed(ZERO);
+             }
+        //Right Trigger-Activates the Shooter motor
+        if(xController.getTriggerAxis(Hand.kRight) > 0)
+             {
+             controller.setShooterSpeed(SHOOTER_SPEED);
+            }
+           else 
+            {
+            controller.setShooterSpeed(ZERO);
+            }
 
     }
 
