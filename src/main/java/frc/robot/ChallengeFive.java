@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.Wheels.DriveType;
 // import edu.wpi.first.wpilibj.SPI;
 // import com.kauailabs.navx.frc.AHRS;
 // import edu.wpi.first.wpilibj.DriverStation;
@@ -23,7 +24,7 @@ public class ChallengeFive {
     private static double ZERO = 0;
     private static double INTAKE_SPEED = 0.7;
     private static double SHOOTER_SPEED = 0.5;
-   
+    private DriveType driveType;
     //put variables here
     private double rightStickX;
     private double rightStickY;
@@ -70,6 +71,7 @@ public class ChallengeFive {
     public ChallengeFive(Controller cIn) {
         controller = cIn; 
         xController = controller.xcontroller;
+        driveType = DriveType.ARCADE;
     }
 
 
@@ -138,27 +140,21 @@ else
 controller.setIntakeSpeed(ZERO);
 }
 
-//Y button-set to high shooter speed
+//Y button-increase to high shooter speed
 
     if(xController.getYButtonPressed())
         {
             SHOOTER_SPEED += 0.3;
          }
-        if(xController.getYButtonReleased())
-             {
-                   SHOOTER_SPEED -= 0.3;
-            }
+        
 
-//B button-set to low shooter speed
+//B button-decrease to low shooter speed
 
 if(xController.getBButtonPressed())
     {
         SHOOTER_SPEED -= 0.3;
     }
-if(xController.getBButtonReleased())
-    {
-        SHOOTER_SPEED += 0.3;
-    }
+
 
         //Left Trigger-Activates the feeder motor
         if(xController.getTriggerAxis(Hand.kLeft) > 0) 
