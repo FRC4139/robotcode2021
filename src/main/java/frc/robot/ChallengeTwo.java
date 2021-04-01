@@ -29,6 +29,8 @@ public class ChallengeTwo {
     private static final double MAX_DRIVE_SPEED = 0.8;
     private static final double OUTER_TURN_DRIVE_SPEED = 0.6; 
 
+    public static final boolean isSaatvikDumb = true;
+
     //constants for path 3 (bounce)
     private static final double R_T_ONE = 20; // we can change this
     private static final double R_T_TWO =  (1800 - Math.pow(R_T_ONE, 2)) / (60 - 2 * R_T_ONE); 
@@ -103,9 +105,9 @@ public class ChallengeTwo {
         xController = controller.xcontroller;
 
         pathSelector = new SendableChooser();
-        pathSelector.addOption("Path One (Barrel)", 1);
-        pathSelector.addOption("Path Two (Slalom)", 2);
-        pathSelector.addOption("Path Three (Bounce)", 3);
+        pathSelector.addOption("Path One (Barrel)", 0);
+        pathSelector.addOption("Path Two (Slalom)", 1);
+        pathSelector.addOption("Path Three (Bounce)", 2);
 
         //createCircularAutonomousSegment(double radius, double angle, int direction, boolean rotation, double intakeSpeed, AutonomousSegment prev)
         //createStraightAutonomousSegment(double length, int direction, double intakeSpeed, AutonomousSegment prev)
