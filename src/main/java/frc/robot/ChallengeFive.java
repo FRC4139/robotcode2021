@@ -31,7 +31,7 @@ public class ChallengeFive {
     private double encoderDistance;
     private double angle;
     private double ultraSonic;
-
+     private int inverse = 1;
     //this is the main controller class (which we have written before), which will call the update methods below. This is NOT an Xbox Controller
     private Controller controller;   
 
@@ -104,7 +104,7 @@ public class ChallengeFive {
         */
        
         // This is a very basic way of driving using two joysticks. Think about other ways the robot can be driven. Which would be the easiest and/or most efficient for the driver?
-        controller.setDriveSpeed(xController.getY(Hand.kLeft), xController.getY(Hand.kRight));
+       // controller.setDriveSpeed(xController.getY(Hand.kLeft), xController.getY(Hand.kRight));
         
         rightStickX = xController.getX(Hand.kRight);
         rightStickY = xController.getY(Hand.kRight);
@@ -116,10 +116,22 @@ public class ChallengeFive {
         SmartDashboard.putNumber("Angle is: ", angle);
         SmartDashboard.putNumber("Ultra Sonic Reading is: " , + ultraSonic);
 
+      //  controller.diffDrive(inverseMultiplier * xController.getY(Hand.kLeft), inverseMultiplier * xController.getX(Hand.kLeft), driveType);
+        //        break;
+          //  case TANK:
+            //    controller.diffDrive(inverseMultiplier * xController.getY(Hand.kLeft), inverseMultiplier * xController.getY(Hand.kRight), driveType);
+        //}
+//right joytick-the intake.
 
-//right joytick-the intake. Note-I am not sure
-//whether not assinging the values at the beginning
-//will mess the code up
+//drives robot with left joystick
+
+controller.diffDrive(inverse * xController.getY(Hand.kLeft), inverse * xController.getX(Hand.kLeft), driveType);
+//X button-inverse 
+
+if(xController.getXButtonPressed())
+{
+    inverse = inverse * -1;
+}
 
 //intake moves up when right joystick is up
 if(rightStickY > 0)
