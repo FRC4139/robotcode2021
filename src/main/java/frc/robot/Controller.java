@@ -1,7 +1,8 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.XboxController;
-
+import edu.wpi.first.wpilibj.GenericHID.Hand;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.SPI;
 import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.wpilibj.AnalogInput;
@@ -42,7 +43,7 @@ public class Controller{
     private ChallengeFour cFour;
     private ChallengeFive cFive;
     //-1 = testing, 1 = challenge one, 2 = challenge 2... 5 = challenge 5
-    private int challengeNumber = 1; 
+    private int challengeNumber = 4; 
 
 
 
@@ -84,9 +85,18 @@ public class Controller{
 
         //get value from the ultrasonic sensor mounted in the front of the robot
         //double ultrasonicReading = getUltraSonicReading();
-
-
-
+        
+        SmartDashboard.putNumber("x displacement", ahrs.getDisplacementX());
+        SmartDashboard.putNumber("y displacement", ahrs.getDisplacementY());
+        SmartDashboard.putNumber("z displacement", ahrs.getDisplacementZ());
+        
+        
+        if (xcontroller.getStickButtonPressed(Hand.kRight)) {
+            challengeNumber++;
+            if (challengeNumber == 6) { challengeNumber = 1; }
+        }
+        SmartDashboard.putNumber("challenge ", challengeNumber);
+        wheels.ShowSpeedsOnDashboard();
 
         //logic code below
 
@@ -111,7 +121,9 @@ public class Controller{
         // SmartDashboard.putNumber("Ultrasonic Reading (feet):", getUltraSonicReading() / 12);
         
         wheels.ShowSpeedsOnDashboard();
-        
+        SmartDashboard.putNumber("x displacement", ahrs.getDisplacementX());
+        SmartDashboard.putNumber("y displacement", ahrs.getDisplacementY());
+        SmartDashboard.putNumber("z displacement", ahrs.getDisplacementZ());
         switch(challengeNumber) {
             case -1: break;
             case 1: cOne.UpdateAutonomous(); break;
@@ -189,6 +201,7 @@ public class Controller{
     public void calibrate() {
         ahrs.calibrate();
         ahrs.zeroYaw();
+        ahrs.resetDisplacement();
         wheels.resetEncoders();
     }
 
@@ -199,6 +212,7 @@ public class Controller{
    
     public void resetDistance() {
         wheels.resetRotations();
+        
     }
 
     public void inverseWheels() {

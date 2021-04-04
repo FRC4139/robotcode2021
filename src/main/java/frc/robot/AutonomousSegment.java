@@ -17,9 +17,11 @@ public class AutonomousSegment {
     public AutonomousSegment(double len, double ang, AutonomousSegment prev, double[] s, boolean distanceGreater, boolean angleGreater) {
         length = len;
         angleChange = ang;
+        totalLength = length;
+
 
         if (prev != null) {
-            totalLength = prev.totalLength + length;
+            //totalLength = prev.totalLength + length;
             totalAngleChange = prev.angleChange + angleChange;
         } else {
             totalLength = length;
@@ -45,7 +47,7 @@ public class AutonomousSegment {
 
     public void SetSpeeds(Controller c) {
         System.out.println("Moving onto next segment.");
-
+        
         c.setDriveSpeed(speeds[0], speeds[1]);
         c.setIntakeSpeed(speeds[2]);
     }

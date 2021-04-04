@@ -24,12 +24,12 @@ public class ChallengeTwo {
     private static final double FEEDER_SPEED = -0.4;
     private static final double ZERO = 0;
 
-    private static final double DISTANCE_PIVOT_TO_WHEEL = 22.5 / 2;
+    private static final double DISTANCE_PIVOT_TO_WHEEL = 21.5 / 2;
 
-    private static final double MAX_DRIVE_SPEED = 0.8;
-    private static final double OUTER_TURN_DRIVE_SPEED = 0.6; 
+    private static final double MAX_DRIVE_SPEED = 0.4;
+    private static final double OUTER_TURN_DRIVE_SPEED = 0.35; 
 
-    public static final boolean isSaatvikDumb = true;
+
 
     //constants for path 3 (bounce)
     private static final double R_T_ONE = 20; // we can change this
@@ -54,7 +54,7 @@ public class ChallengeTwo {
     //this is the main controller class (which we have written before), which will call the update methods below. This is NOT an Xbox Controller
     private Controller controller;   
     private ArrayList<ArrayList<AutonomousSegment>> pathSegments = new ArrayList<ArrayList<AutonomousSegment>>();
-    private SendableChooser pathSelector;
+
 
     /* 
         Instructions on how to get data from the robot:
@@ -104,11 +104,6 @@ public class ChallengeTwo {
         path = p;
         xController = controller.xcontroller;
 
-        pathSelector = new SendableChooser();
-        pathSelector.addOption("Path One (Barrel)", 0);
-        pathSelector.addOption("Path Two (Slalom)", 1);
-        pathSelector.addOption("Path Three (Bounce)", 2);
-        pathSelector.addOption("Test Path", 3);
 
         //createCircularAutonomousSegment(double radius, double angle, int direction, boolean rotation, double intakeSpeed, AutonomousSegment prev)
         //createStraightAutonomousSegment(double length, int direction, double intakeSpeed, AutonomousSegment prev)
@@ -228,8 +223,8 @@ public class ChallengeTwo {
         pathSegments.add(path3);
         
         ArrayList<AutonomousSegment> path4 = new ArrayList<AutonomousSegment>();
-        path4.add(createStraightAutonomousSegment(100, 1, 0, new AutonomousSegment(false)));
-        path4.add(createCircularAutonomousSegment(50, 90, 1, true, 0, path4.get(path4.size()-1)));
+        path4.add(createStraightAutonomousSegment(500, 1, 0, new AutonomousSegment(false)));
+        //path4.add(createCircularAutonomousSegment(50, Math.PI / 2, 1, true, 0, path4.get(path4.size()-1)));
         pathSegments.add(path4);
     }
 
@@ -249,8 +244,8 @@ public class ChallengeTwo {
     //this is called every 20 milliseconds during autonomous
     public void UpdateAutonomous() {
         // Display useful information
-        SmartDashboard.putNumber("Current Path", path);
-        SmartDashboard.putNumber("Path Length", pathSegments.size());
+        SmartDashboard.putNumber("Current Path", path + 1);
+        SmartDashboard.putNumber("Path Length", pathSegments.get(path).size());
         SmartDashboard.putNumber("Current Segment", segment);
         SmartDashboard.putNumber("Total distance travelled (in)", getDistanceTravelled());
         SmartDashboard.putNumber("Angle Facing Real (deg)", controller.getAngleFacing());
@@ -258,17 +253,16 @@ public class ChallengeTwo {
         SmartDashboard.putNumber("Current Circle Radius (in)", CIRCLE_RADIUS);
         SmartDashboard.putNumber("Inner Turn Speed", INNER_TURN_DRIVE_SPEED);
 
-        path = (int) pathSelector.getSelected();
+
 
         
-        if (!started) { 
-            pathSegments.get(path).get(0).SetSpeeds(controller);
-            started = true;
-        }
+        
+        
+        
 
         if (pathSegments.get(path).get(segment - 1).IsSegmentComplete(getDistanceTravelled(), getAngleFacing())) {
             segment++;
-            pathSegments.get(path).get(segment - 1).SetSpeeds(controller);
+            controller.resetDistance();
         }
 
         if (segment == pathSegments.size()) { 
@@ -276,7 +270,7 @@ public class ChallengeTwo {
             controller.setIntakeSpeed(0);
             return;
         }
-
+        pathSegments.get(path).get(segment - 1).SetSpeeds(controller);
 
 
         // if (path == 1) {
@@ -348,7 +342,7 @@ public class ChallengeTwo {
         SmartDashboard.putNumber("Total distance travelled (in)", getDistanceTravelled());
         SmartDashboard.putNumber("Angle Facing Real (deg)", controller.getAngleFacing());
         SmartDashboard.putNumber("Angle Facing Adjusted (rad)", getAngleFacing());
-        path = (int) pathSelector.getSelected();
+        
         if (xController.getAButtonPressed()) {
             controller.calibrate();
         }

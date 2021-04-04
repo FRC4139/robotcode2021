@@ -43,9 +43,8 @@ public class Wheels {
     }
 
     public double getRotations(String location) { 
-        if (location == "fL") return frontLeft.getSensorCollection().getIntegratedSensorPosition() / 2048;
-        if (location == "bR") return backRight.getSensorCollection().getIntegratedSensorPosition() / 2048;
-
+        if (location == "fL") return frontLeft.getSensorCollection().getIntegratedSensorPosition() / 4096;
+        if (location == "bR") return backRight.getSensorCollection().getIntegratedSensorPosition() / 4096;
         return 0;
 
     }
@@ -58,6 +57,8 @@ public class Wheels {
 
 
         System.out.println("Setting speeds to: " + leftSpeed + " " + rightSpeed);
+        leftSpeed *= 0.5;
+        rightSpeed *= 0.5;
         if(!inverseState)
         {
             //if inversState is true, reverse the speeds and call drive 
@@ -107,6 +108,8 @@ public class Wheels {
     }
 
     public void ShowSpeedsOnDashboard() {
-        SmartDashboard.putNumberArray("Speeds (fL, bL, fR, bR", new double[] {frontLeft.get(), backLeft.get(), frontRight.get(), backRight.get() });
+        //System.out.println(new double[] {frontLeft.get(), backLeft.get(), frontRight.get(), backRight.get() });
+        double[] zzz = new double[] {frontLeft.get(), backLeft.get(), frontRight.get(), backRight.get() };
+        SmartDashboard.putNumber("Speeds fL", zzz[0]);
     }
 }

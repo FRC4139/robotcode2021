@@ -25,7 +25,7 @@ public class ChallengeOne {
     private static double INTAKE_SPEED = 0.85;
     
 
-    private static final double DISTANCE_PIVOT_TO_WHEEL = 22.5 / 2;
+    private static final double DISTANCE_PIVOT_TO_WHEEL = 21.5 / 2;
 
     private static final double MAX_DRIVE_SPEED = 0.8;
     private static final double OUTER_TURN_DRIVE_SPEED = 0.6; 
@@ -244,17 +244,19 @@ public class ChallengeOne {
         SmartDashboard.putNumber("path size", path.size());
         SmartDashboard.putBoolean("started", started);
         
-        if (currentSegment == path.size()) { 
+        if (currentSegment == path.size()) {
+            System.out.println("Setting to zero"); 
+            
             controller.setDriveSpeed(0, 0);
             controller.setIntakeSpeed(0);
             return;
         }
-        if (!started) { 
-            path.get(0).SetSpeeds(controller);
-            started = true;
-        }
+        
+        path.get(currentSegment -1).SetSpeeds(controller);
+        
         if (path.get(currentSegment - 1).IsSegmentComplete(getDistanceTravelled(), getAngleFacing())) {
             currentSegment++;
+            controller.resetDistance();
             path.get(currentSegment - 1).SetSpeeds(controller);
         }
         
