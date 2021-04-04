@@ -15,5 +15,9 @@ public class Intake {
         bagMotor.set(val1);
     }
 
+	public double getRawSpeed() {
+		return bagMotor.get();
+	}
+
 }
 

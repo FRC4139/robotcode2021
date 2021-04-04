@@ -112,4 +112,15 @@ public class Wheels {
         double[] zzz = new double[] {frontLeft.get(), backLeft.get(), frontRight.get(), backRight.get() };
         SmartDashboard.putNumber("Speeds fL", zzz[0]);
     }
+
+	public double[] getRawSpeeds() {
+		return new double[] { frontLeft.get(), backLeft.get(), frontRight.get(), backRight.get() };
+    }
+    
+    public void setRawSpeeds(double[] speeds) {
+        frontLeft.set(speeds[0]); 
+        backLeft.set(speeds[1]);
+        frontRight.set(speeds[2]);
+        backRight.set(speeds[3]);
+    }
 }

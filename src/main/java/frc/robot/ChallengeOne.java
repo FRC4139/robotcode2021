@@ -1,7 +1,10 @@
 package frc.robot;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
-
 
 import edu.wpi.first.wpilibj.XboxController;
 
@@ -16,6 +19,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 // import edu.wpi.first.wpilibj.DigitalInput;
 // import edu.wpi.first.wpilibj.Servo;
 // import edu.wpi.first.wpilibj.Timer;
+import frc.robot.Wheels.DriveType;
 
 
 
@@ -67,198 +71,208 @@ public class ChallengeOne {
     
     */
 
-    private ArrayList<AutonomousSegment> path = new ArrayList<AutonomousSegment>();
+    //private ArrayList<AutonomousSegment> path = new ArrayList<AutonomousSegment>();
 
     private int currentSegment = 1;
     private String whichPath;
     private boolean started = false;
-
+    private String path = "/media/sda1/Challenge_1_Path_";
+    private CSVPath csvPath;
 
     // Methods
 
     //constructor
+    
     public ChallengeOne(Controller cIn) {
         controller = cIn; 
         xController = controller.xcontroller;
         SmartDashboard.putBoolean("started challenge 1", false);
         //determine which path we are on 
         if (getCompassHeading() < 1 && getCompassHeading() > -1) {
-            whichPath = "RED A";
-            
+            whichPath = "RED_A.txt";
+            path += whichPath;
             /*
             Place center of front of robot at (30, my + TURN_RADIUS) at angle 0 radians
             */
 
             //following variables are defined by the points in the geogebra diagram
-            double mx = 90 - TURN_RADIUS * Math.cos(Math.atan(4.15315));
-            double my = 90 - TURN_RADIUS * Math.sin(Math.atan(4.15315));
-            double ox = 150 + TURN_RADIUS * Math.cos(Math.PI + Math.atan(-2.41424));
-            double oy = 60 + TURN_RADIUS * Math.sin(Math.PI + Math.atan(-2.41424));
-            double distMO = Math.sqrt(Math.pow(mx-ox,2)+Math.pow((my-oy),2));
+            // double mx = 90 - TURN_RADIUS * Math.cos(Math.atan(4.15315));
+            // double my = 90 - TURN_RADIUS * Math.sin(Math.atan(4.15315));
+            // double ox = 150 + TURN_RADIUS * Math.cos(Math.PI + Math.atan(-2.41424));
+            // double oy = 60 + TURN_RADIUS * Math.sin(Math.PI + Math.atan(-2.41424));
+            // double distMO = Math.sqrt(Math.pow(mx-ox,2)+Math.pow((my-oy),2));
 
-            double px = 180 + TURN_RADIUS * Math.cos(Math.atan(-1.38743));
-            double py = 150 + TURN_RADIUS * Math.sin(Math.atan(-1.38743));
-            double distOP = Math.sqrt(Math.pow(ox-px,2)+Math.pow((oy-py),2));
+            // double px = 180 + TURN_RADIUS * Math.cos(Math.atan(-1.38743));
+            // double py = 150 + TURN_RADIUS * Math.sin(Math.atan(-1.38743));
+            // double distOP = Math.sqrt(Math.pow(ox-px,2)+Math.pow((oy-py),2));
 
-            path.add(createStraightAutonomousSegment(mx-30, 1, 0, new AutonomousSegment(false)));
-            path.add(createCircularAutonomousSegment(TURN_RADIUS, Math.PI / 2 - (Math.acos(2 * TURN_RADIUS / (distMO))) - Math.atan2(oy-my, ox-mx ), 1, true, INTAKE_SPEED, path.get(path.size() - 1)));
-            path.add(createStraightAutonomousSegment(Math.tan(Math.acos(2 * TURN_RADIUS / (distMO))) * TURN_RADIUS * 2, 1, 0, path.get(path.size() - 1)));
-            path.add(createCircularAutonomousSegment(TURN_RADIUS, Math.PI - (  Math.acos(2 * TURN_RADIUS / (distMO)) + Math.acos(2 * TURN_RADIUS / (distOP)) + Math.atan2(oy-my, ox-mx) - Math.atan2(py-oy, px-ox) ), 1, false, INTAKE_SPEED, path.get(path.size() - 1)));
-            path.add(createStraightAutonomousSegment(Math.tan(Math.acos(2 * TURN_RADIUS / (distOP))) * TURN_RADIUS * 2, 1, 0, path.get(path.size() - 1)));
-            path.add(createCircularAutonomousSegment(TURN_RADIUS, Math.PI/2 - Math.acos(2 * TURN_RADIUS / (distOP)) + Math.atan2(py-oy , px - ox), 1, true, INTAKE_SPEED, path.get(path.size() - 1)));
-            path.add(createStraightAutonomousSegment(330-px, 1, 0, path.get(path.size() - 1))); //increase 330 if robot is stopping too soon
+            // path.add(createStraightAutonomousSegment(mx-30, 1, 0, new AutonomousSegment(false)));
+            // path.add(createCircularAutonomousSegment(TURN_RADIUS, Math.PI / 2 - (Math.acos(2 * TURN_RADIUS / (distMO))) - Math.atan2(oy-my, ox-mx ), 1, true, INTAKE_SPEED, path.get(path.size() - 1)));
+            // path.add(createStraightAutonomousSegment(Math.tan(Math.acos(2 * TURN_RADIUS / (distMO))) * TURN_RADIUS * 2, 1, 0, path.get(path.size() - 1)));
+            // path.add(createCircularAutonomousSegment(TURN_RADIUS, Math.PI - (  Math.acos(2 * TURN_RADIUS / (distMO)) + Math.acos(2 * TURN_RADIUS / (distOP)) + Math.atan2(oy-my, ox-mx) - Math.atan2(py-oy, px-ox) ), 1, false, INTAKE_SPEED, path.get(path.size() - 1)));
+            // path.add(createStraightAutonomousSegment(Math.tan(Math.acos(2 * TURN_RADIUS / (distOP))) * TURN_RADIUS * 2, 1, 0, path.get(path.size() - 1)));
+            // path.add(createCircularAutonomousSegment(TURN_RADIUS, Math.PI/2 - Math.acos(2 * TURN_RADIUS / (distOP)) + Math.atan2(py-oy , px - ox), 1, true, INTAKE_SPEED, path.get(path.size() - 1)));
+            // path.add(createStraightAutonomousSegment(330-px, 1, 0, path.get(path.size() - 1))); //increase 330 if robot is stopping too soon
 
         } else if (getCompassHeading() <= -15) {
-            whichPath = "RED B";
-
+            whichPath = "RED_B.txt";
+            path += whichPath;
             /*
             Place center of front of robot at (ax,ay) at angle (Math.asin(TURN_RADIUS/distAE) - Math.atan2(ay-ey,ex-ax)) radians
             */
             //following variables are defined by the points in the geogebra diagram
-            double B1x = 30;
-            double B1y = 120;
+            // double B1x = 30;
+            // double B1y = 120;
 
-            double ex = 90 - TURN_RADIUS * Math.cos(Math.atan(1.58579));
-            double ey = 120 - TURN_RADIUS * Math.sin(Math.atan(1.58579));
-            //double distB1e = Math.sqrt(Math.pow(B1x-ex,2)+Math.pow((B1y-ey),2));
+            // double ex = 90 - TURN_RADIUS * Math.cos(Math.atan(1.58579));
+            // double ey = 120 - TURN_RADIUS * Math.sin(Math.atan(1.58579));
+            // //double distB1e = Math.sqrt(Math.pow(B1x-ex,2)+Math.pow((B1y-ey),2));
 
-            double ax = 30;
-            double ay = B1y + TURN_RADIUS / Math.cos(Math.atan2(B1y-ey, ex-B1x)); // starting x-coord
-            double distAE = Math.sqrt(Math.pow(ax-ex,2)+Math.pow((ay-ey),2));     // starting y-coord
+            // double ax = 30;
+            // double ay = B1y + TURN_RADIUS / Math.cos(Math.atan2(B1y-ey, ex-B1x)); // starting x-coord
+            // double distAE = Math.sqrt(Math.pow(ax-ex,2)+Math.pow((ay-ey),2));     // starting y-coord
 
-            double gx = 150;
-            double gy = 60 + TURN_RADIUS;
-            double distEG = Math.sqrt(Math.pow(ex-gx,2)+Math.pow((ey-gy),2));
+            // double gx = 150;
+            // double gy = 60 + TURN_RADIUS;
+            // double distEG = Math.sqrt(Math.pow(ex-gx,2)+Math.pow((ey-gy),2));
 
-            double jx = 210 + TURN_RADIUS * Math.cos(Math.atan(-1.93771));
-            double jy = 120 + TURN_RADIUS * Math.sin(Math.atan(-1.93771));
-            double distGJ = Math.sqrt(Math.pow(jx-gx,2)+Math.pow((jy-gy),2));
+            // double jx = 210 + TURN_RADIUS * Math.cos(Math.atan(-1.93771));
+            // double jy = 120 + TURN_RADIUS * Math.sin(Math.atan(-1.93771));
+            // double distGJ = Math.sqrt(Math.pow(jx-gx,2)+Math.pow((jy-gy),2));
 
-            double B11x = 330;
-            double B11y = 120;
-            double cx = 330;
-            double cy = B11y + TURN_RADIUS / Math.cos(Math.atan2(B11y-jy,B11x-jx));
-            double distJC = Math.sqrt(Math.pow(jx-cx,2)+Math.pow((jy-cy),2));
+            // double B11x = 330;
+            // double B11y = 120;
+            // double cx = 330;
+            // double cy = B11y + TURN_RADIUS / Math.cos(Math.atan2(B11y-jy,B11x-jx));
+            // double distJC = Math.sqrt(Math.pow(jx-cx,2)+Math.pow((jy-cy),2));
 
-            path.add(createStraightAutonomousSegment(distAE * Math.sin(Math.acos(TURN_RADIUS/distAE)), 1, 0, new AutonomousSegment(false)));
-            path.add(createCircularAutonomousSegment(TURN_RADIUS, 2*Math.PI - ( Math.PI/2 + Math.atan2(ay-ey,ex-ax) + Math.acos(TURN_RADIUS / distAE) + Math.acos(2*TURN_RADIUS / distEG) + Math.atan2(gx-ex,ey-gy) ), 1, true, INTAKE_SPEED, path.get(path.size() - 1)));
-            path.add(createStraightAutonomousSegment(Math.tan(Math.acos(2 * TURN_RADIUS / (distEG))) * TURN_RADIUS * 2, 1, 0, path.get(path.size() - 1)));
-            path.add(createCircularAutonomousSegment(TURN_RADIUS, 2*Math.PI - ( Math.acos(2*TURN_RADIUS/distEG) + Math.atan2(gx-ex,ey-gy) + Math.atan2(jx-gx,jy-gy) + Math.acos(2*TURN_RADIUS / distGJ) ), 1, false, INTAKE_SPEED, path.get(path.size() - 1)));
-            path.add(createStraightAutonomousSegment(Math.tan(Math.acos(2 * TURN_RADIUS / (distGJ))) * TURN_RADIUS * 2, 1, 0, path.get(path.size() - 1)));
-            path.add(createCircularAutonomousSegment(TURN_RADIUS, 2*Math.PI - ( Math.PI/2 + Math.atan2(jx-gx,jy-gy) + Math.acos(2*TURN_RADIUS / distGJ) + Math.acos(TURN_RADIUS / distJC) + Math.atan2(cy-jy,cx-jx) ), 1, true, INTAKE_SPEED, path.get(path.size() - 1)));
-            path.add(createStraightAutonomousSegment(0 + distJC * Math.sin(Math.acos(TURN_RADIUS/distJC)), 1, 0, path.get(path.size() - 1))); //increase 0 if robot is stopping too soon
+            // path.add(createStraightAutonomousSegment(distAE * Math.sin(Math.acos(TURN_RADIUS/distAE)), 1, 0, new AutonomousSegment(false)));
+            // path.add(createCircularAutonomousSegment(TURN_RADIUS, 2*Math.PI - ( Math.PI/2 + Math.atan2(ay-ey,ex-ax) + Math.acos(TURN_RADIUS / distAE) + Math.acos(2*TURN_RADIUS / distEG) + Math.atan2(gx-ex,ey-gy) ), 1, true, INTAKE_SPEED, path.get(path.size() - 1)));
+            // path.add(createStraightAutonomousSegment(Math.tan(Math.acos(2 * TURN_RADIUS / (distEG))) * TURN_RADIUS * 2, 1, 0, path.get(path.size() - 1)));
+            // path.add(createCircularAutonomousSegment(TURN_RADIUS, 2*Math.PI - ( Math.acos(2*TURN_RADIUS/distEG) + Math.atan2(gx-ex,ey-gy) + Math.atan2(jx-gx,jy-gy) + Math.acos(2*TURN_RADIUS / distGJ) ), 1, false, INTAKE_SPEED, path.get(path.size() - 1)));
+            // path.add(createStraightAutonomousSegment(Math.tan(Math.acos(2 * TURN_RADIUS / (distGJ))) * TURN_RADIUS * 2, 1, 0, path.get(path.size() - 1)));
+            // path.add(createCircularAutonomousSegment(TURN_RADIUS, 2*Math.PI - ( Math.PI/2 + Math.atan2(jx-gx,jy-gy) + Math.acos(2*TURN_RADIUS / distGJ) + Math.acos(TURN_RADIUS / distJC) + Math.atan2(cy-jy,cx-jx) ), 1, true, INTAKE_SPEED, path.get(path.size() - 1)));
+            // path.add(createStraightAutonomousSegment(0 + distJC * Math.sin(Math.acos(TURN_RADIUS/distJC)), 1, 0, path.get(path.size() - 1))); //increase 0 if robot is stopping too soon
             
 
         } else if (getCompassHeading() <= -1 && getCompassHeading() > -15) {
-            whichPath = "BLUE A";
-            
+            whichPath = "BLUE_A.txt";
+            path += whichPath;
             /*
             Place center of front of robot at (kx,ky) at angle (Math.atan2(ny-ky, nx-kx) - Math.asin(TURN_RADIUS/distKN)) radians
             */
             //following variables are defined by the points in the geogebra diagram
-            double kx = 30;     //starting x-coord
-            double ky = 30;     //starting y-coord
-            double nx = 180 - TURN_RADIUS * Math.cos(Math.atan(-1.38743));
-            double ny = 30 - TURN_RADIUS * Math.sin(Math.atan(-1.38743));
-            double distKN = Math.sqrt(Math.pow(kx-nx,2)+Math.pow((ky-ny),2));
+        //     double kx = 30;     //starting x-coord
+        //     double ky = 30;     //starting y-coord
+        //     double nx = 180 - TURN_RADIUS * Math.cos(Math.atan(-1.38743));
+        //     double ny = 30 - TURN_RADIUS * Math.sin(Math.atan(-1.38743));
+        //     double distKN = Math.sqrt(Math.pow(kx-nx,2)+Math.pow((ky-ny),2));
 
-            double zx = 210 - TURN_RADIUS * Math.cos(Math.PI + Math.atan(-2.41421));
-            double zy = 120 - TURN_RADIUS * Math.sin(Math.PI + Math.atan(-2.41421));
-            double distNZ = Math.sqrt(Math.pow(nx-zx,2)+Math.pow((ny-zy),2));
+        //     double zx = 210 - TURN_RADIUS * Math.cos(Math.PI + Math.atan(-2.41421));
+        //     double zy = 120 - TURN_RADIUS * Math.sin(Math.PI + Math.atan(-2.41421));
+        //     double distNZ = Math.sqrt(Math.pow(nx-zx,2)+Math.pow((ny-zy),2));
 
-            double a1x = 270 + TURN_RADIUS * Math.cos(Math.atan(4.23607));
-            double a1y = 90 + TURN_RADIUS * Math.sin(Math.atan(4.23607));
-            double distZA1 = Math.sqrt(Math.pow(zx-a1x,2)+Math.pow((zy-a1y),2));
+        //     double a1x = 270 + TURN_RADIUS * Math.cos(Math.atan(4.23607));
+        //     double a1y = 90 + TURN_RADIUS * Math.sin(Math.atan(4.23607));
+        //     double distZA1 = Math.sqrt(Math.pow(zx-a1x,2)+Math.pow((zy-a1y),2));
 
-            path.add(createStraightAutonomousSegment(distKN * Math.sin(Math.acos(TURN_RADIUS/distKN)), 1, 0, new AutonomousSegment(false)));
-            path.add(createCircularAutonomousSegment(TURN_RADIUS, Math.PI - ( Math.acos(2 * TURN_RADIUS / distNZ) - Math.atan2(zy-ny,zx-nx) + Math.acos(TURN_RADIUS/distKN) + Math.atan2(ny-ky,nx-kx) ), 1, false, INTAKE_SPEED, path.get(path.size() - 1)));
-            path.add(createStraightAutonomousSegment(Math.tan(Math.acos(2 * TURN_RADIUS / (distNZ))) * TURN_RADIUS * 2, 1, 0, path.get(path.size() - 1)));
-            path.add(createCircularAutonomousSegment(TURN_RADIUS, Math.PI - (  Math.acos(2 * TURN_RADIUS / (distZA1)) + Math.acos(2 * TURN_RADIUS / (distNZ)) + Math.atan2(a1y-zy, a1x-zx) - Math.atan2(zy-ny, zx-nx) ), 1, true, INTAKE_SPEED, path.get(path.size() - 1)));
-            path.add(createStraightAutonomousSegment(Math.tan(Math.acos(2 * TURN_RADIUS / (distZA1))) * TURN_RADIUS * 2, 1, 0, path.get(path.size() - 1)));
-            path.add(createCircularAutonomousSegment(TURN_RADIUS, Math.PI/2 - (Math.acos(2 * TURN_RADIUS / (distZA1)) + Math.atan2(a1y-zy , a1x - zx)), 1, false, INTAKE_SPEED, path.get(path.size() - 1)));
-            path.add(createStraightAutonomousSegment(330-a1x, 1, 0, path.get(path.size() - 1))); //increase 330 if robot is stopping too soon
+        //     path.add(createStraightAutonomousSegment(distKN * Math.sin(Math.acos(TURN_RADIUS/distKN)), 1, 0, new AutonomousSegment(false)));
+        //     path.add(createCircularAutonomousSegment(TURN_RADIUS, Math.PI - ( Math.acos(2 * TURN_RADIUS / distNZ) - Math.atan2(zy-ny,zx-nx) + Math.acos(TURN_RADIUS/distKN) + Math.atan2(ny-ky,nx-kx) ), 1, false, INTAKE_SPEED, path.get(path.size() - 1)));
+        //     path.add(createStraightAutonomousSegment(Math.tan(Math.acos(2 * TURN_RADIUS / (distNZ))) * TURN_RADIUS * 2, 1, 0, path.get(path.size() - 1)));
+        //     path.add(createCircularAutonomousSegment(TURN_RADIUS, Math.PI - (  Math.acos(2 * TURN_RADIUS / (distZA1)) + Math.acos(2 * TURN_RADIUS / (distNZ)) + Math.atan2(a1y-zy, a1x-zx) - Math.atan2(zy-ny, zx-nx) ), 1, true, INTAKE_SPEED, path.get(path.size() - 1)));
+        //     path.add(createStraightAutonomousSegment(Math.tan(Math.acos(2 * TURN_RADIUS / (distZA1))) * TURN_RADIUS * 2, 1, 0, path.get(path.size() - 1)));
+        //     path.add(createCircularAutonomousSegment(TURN_RADIUS, Math.PI/2 - (Math.acos(2 * TURN_RADIUS / (distZA1)) + Math.atan2(a1y-zy , a1x - zx)), 1, false, INTAKE_SPEED, path.get(path.size() - 1)));
+        //     path.add(createStraightAutonomousSegment(330-a1x, 1, 0, path.get(path.size() - 1))); //increase 330 if robot is stopping too soon
+        
+    
         } else {
-            whichPath = "BLUE B";
-            
+            whichPath = "BLUE_B.txt";
+            path += whichPath;
             /*
             Place center of front of robot at (tx,ty) at angle (Math.atan2(a1y-ty,a1x-tx) - Math.asin(TURN_RADIUS/distTA1)) radians
             */
             //following variables are defined by the points in the geogebra diagram
-            double D1x = 30;
-            double D1y = 60;
+            // double D1x = 30;
+            // double D1y = 60;
 
-            double a1x = 180 - TURN_RADIUS * Math.cos(Math.atan(-2.02058));
-            double a1y = 60 - TURN_RADIUS * Math.sin(Math.atan(-2.02058));
+            // double a1x = 180 - TURN_RADIUS * Math.cos(Math.atan(-2.02058));
+            // double a1y = 60 - TURN_RADIUS * Math.sin(Math.atan(-2.02058));
 
-            double tx = 30;                                                         //starting x-coord
-            double ty = D1y - TURN_RADIUS / Math.cos(Math.atan2(a1y-D1y, a1x-D1x)); //starting y-coord
-            double distTA1 = Math.sqrt(Math.pow(tx-a1x,2)+Math.pow((ty-a1y),2));
+            // double tx = 30;                                                         //starting x-coord
+            // double ty = D1y - TURN_RADIUS / Math.cos(Math.atan2(a1y-D1y, a1x-D1x)); //starting y-coord
+            // double distTA1 = Math.sqrt(Math.pow(tx-a1x,2)+Math.pow((ty-a1y),2));
 
-            double wx = 240;
-            double wy = 120 - TURN_RADIUS;
-            double distA1W = Math.sqrt(Math.pow(a1x-wx,2)+Math.pow((a1y-wy),2));
+            // double wx = 240;
+            // double wy = 120 - TURN_RADIUS;
+            // double distA1W = Math.sqrt(Math.pow(a1x-wx,2)+Math.pow((a1y-wy),2));
 
-            double D10x = 300;
-            double D10y = 60;
-            double distWD10 = Math.sqrt(Math.pow(wx-D10x,2)+Math.pow((wy-D10y),2));
+            // double D10x = 300;
+            // double D10y = 60;
+            // double distWD10 = Math.sqrt(Math.pow(wx-D10x,2)+Math.pow((wy-D10y),2));
 
-            double e1x = 330;
-            double e1y = 60 + 30*Math.tan(Math.PI-(Math.asin(TURN_RADIUS/distWD10)+Math.atan2(wy-D10y,D10x-wx)));
-            double distWE1 = Math.sqrt(Math.pow(wx-e1x,2)+Math.pow((wy-e1y),2));
+            // double e1x = 330;
+            // double e1y = 60 + 30*Math.tan(Math.PI-(Math.asin(TURN_RADIUS/distWD10)+Math.atan2(wy-D10y,D10x-wx)));
+            // double distWE1 = Math.sqrt(Math.pow(wx-e1x,2)+Math.pow((wy-e1y),2));
 
-            path.add(createStraightAutonomousSegment(distTA1 * Math.sin(Math.acos(TURN_RADIUS/distTA1)), 1, 0, new AutonomousSegment(false)));
-            path.add(createCircularAutonomousSegment(TURN_RADIUS, 2*Math.PI - ( Math.PI/2 + Math.atan2(wx-a1x,wy-a1y) + Math.acos(2*TURN_RADIUS / distA1W) + Math.acos(TURN_RADIUS / distTA1) + Math.atan2(a1y-ty,a1x-tx) ), 1, false, INTAKE_SPEED, path.get(path.size() - 1)));
-            path.add(createStraightAutonomousSegment(Math.tan(Math.acos(2 * TURN_RADIUS / (distA1W))) * TURN_RADIUS * 2, 1, 0, path.get(path.size() - 1)));
-            path.add(createCircularAutonomousSegment(TURN_RADIUS, 2*Math.PI - ( Math.acos(2*TURN_RADIUS/distA1W) + Math.atan2(wx-a1x,wy-a1y) + Math.atan2(e1x-wx,wy-e1y) + Math.acos(TURN_RADIUS / distWE1) ), 1, true, INTAKE_SPEED, path.get(path.size() - 1)));
-            path.add(createStraightAutonomousSegment(distWE1 * Math.sin(Math.acos(TURN_RADIUS/distWE1)), 1, INTAKE_SPEED, path.get(path.size() - 1)));
+            // path.add(createStraightAutonomousSegment(distTA1 * Math.sin(Math.acos(TURN_RADIUS/distTA1)), 1, 0, new AutonomousSegment(false)));
+            // path.add(createCircularAutonomousSegment(TURN_RADIUS, 2*Math.PI - ( Math.PI/2 + Math.atan2(wx-a1x,wy-a1y) + Math.acos(2*TURN_RADIUS / distA1W) + Math.acos(TURN_RADIUS / distTA1) + Math.atan2(a1y-ty,a1x-tx) ), 1, false, INTAKE_SPEED, path.get(path.size() - 1)));
+            // path.add(createStraightAutonomousSegment(Math.tan(Math.acos(2 * TURN_RADIUS / (distA1W))) * TURN_RADIUS * 2, 1, 0, path.get(path.size() - 1)));
+            // path.add(createCircularAutonomousSegment(TURN_RADIUS, 2*Math.PI - ( Math.acos(2*TURN_RADIUS/distA1W) + Math.atan2(wx-a1x,wy-a1y) + Math.atan2(e1x-wx,wy-e1y) + Math.acos(TURN_RADIUS / distWE1) ), 1, true, INTAKE_SPEED, path.get(path.size() - 1)));
+            // path.add(createStraightAutonomousSegment(distWE1 * Math.sin(Math.acos(TURN_RADIUS/distWE1)), 1, INTAKE_SPEED, path.get(path.size() - 1)));
             
 
         }
 
-        //add segments to paths here
+        csvPath = new CSVPath(path);
+
     }
 
 
-    /*
-        Unfortunately, you cannot rapidly test your code since we don't have a physical robot to expirement with. 
-        Please try to make sure your code works in theory. 
-        If there are any ways in which it could go wrong, please write comments detailing how. 
+    private File out;
+    private FileWriter fw;
+    private BufferedWriter bw;
+    private boolean recording = false;
 
-    
-        You should consider putting as much useful information as possible on the smart dashboard.
-        Documentation can be found here: https://first.wpi.edu/FRC/roborio/release/docs/java/edu/wpi/first/wpilibj/smartdashboard/SmartDashboard.html
-        For example: SmartDashboard.putNumber("ultra sonic reading", controller.getUltraSonicReading());
-
-    */
+    private int lines;
 
     //this is called every 20 milliseconds during autonomous
     public void UpdateAutonomous() {
         // Display useful information
-        SmartDashboard.putString("Current Path", whichPath);
-        SmartDashboard.putNumber("Current Segment", currentSegment);
+        SmartDashboard.putString("Current Path", path);
+        // SmartDashboard.putNumber("Current Segment", currentSegment);
         SmartDashboard.putNumber("Total distance travelled (in)", getDistanceTravelled());
         SmartDashboard.putNumber("Angle Facing Real (deg)", controller.getAngleFacing());
         SmartDashboard.putNumber("Angle Facing Adjusted (deg)", getAngleFacing());
         SmartDashboard.putNumber("Compass Offset", COMPASS_OFFSET);
         SmartDashboard.putNumber("Compass Heading", getCompassHeading());
-        SmartDashboard.putNumber("path size", path.size());
-        SmartDashboard.putBoolean("started", started);
         
-        if (currentSegment == path.size()) {
-            System.out.println("Setting to zero"); 
+
+        try {
+            int l = csvPath.Update(controller);
+            SmartDashboard.putNumber("Current Line #", l);
+        } catch (IOException e) {
+
+            e.printStackTrace();
+        }
+
+        // SmartDashboard.putNumber("path size", path.size());
+        // SmartDashboard.putBoolean("started", started);
+        
+        // if (currentSegment == path.size()) {
+        //     System.out.println("Setting to zero"); 
             
-            controller.setDriveSpeed(0, 0);
-            controller.setIntakeSpeed(0);
-            return;
-        }
+        //     controller.setDriveSpeed(0, 0);
+        //     controller.setIntakeSpeed(0);
+        //     return;
+        // }
         
-        path.get(currentSegment -1).SetSpeeds(controller);
+        // path.get(currentSegment -1).SetSpeeds(controller);
         
-        if (path.get(currentSegment - 1).IsSegmentComplete(getDistanceTravelled(), getAngleFacing())) {
-            currentSegment++;
-            controller.resetDistance();
-            path.get(currentSegment - 1).SetSpeeds(controller);
-        }
+        // if (path.get(currentSegment - 1).IsSegmentComplete(getDistanceTravelled(), getAngleFacing())) {
+        //     currentSegment++;
+        //     controller.resetDistance();
+        //     path.get(currentSegment - 1).SetSpeeds(controller);
+        // }
         
     }
 
@@ -266,14 +280,62 @@ public class ChallengeOne {
     //this is called every 20 milliseconds during teleop (manually controlled by human with xboxcontroller)
     public void UpdateTeleop() {
         SmartDashboard.putString("Current Path", whichPath);
-        SmartDashboard.putNumber("Current Segment", currentSegment);
+        //SmartDashboard.putNumber("Current Segment", currentSegment);
         SmartDashboard.putNumber("Total distance travelled (in)", getDistanceTravelled());
         SmartDashboard.putNumber("Angle Facing Real (deg)", controller.getAngleFacing());
         SmartDashboard.putNumber("Angle Facing Adjusted (deg)", getAngleFacing());
         SmartDashboard.putNumber("Compass Offset", COMPASS_OFFSET);
         SmartDashboard.putNumber("Compass Heading", getCompassHeading());
+        SmartDashboard.putBoolean("Recording?", recording);
+        SmartDashboard.putNumber("Lines recorded", lines);
 
         if (xController.getBumper(Hand.kLeft)) controller.calibrate(); 
+        if (xController.getBumper(Hand.kRight)) controller.setIntakeSpeed(INTAKE_SPEED);
+
+        if (xController.getAButtonPressed()) { 
+            out = new File(path);
+            try {
+                out.createNewFile();
+                fw = new FileWriter(out);
+                bw = new BufferedWriter(fw);
+            } catch (IOException e) {
+                //  Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+
+        if (xController.getBButtonPressed()) {
+            
+            if (!recording) recording = true; 
+            else if (recording) {
+                recording = false; 
+                try {
+                    bw.write("END");
+                    bw.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                
+            }
+
+        }
+        
+        controller.diffDrive(-1 *  xController.getY(Hand.kLeft), xController.getX(Hand.kLeft), DriveType.ARCADE);
+
+        if (recording) {
+            
+            double[] speeds = controller.getRawDriveSpeeds();
+            String s = speeds[0] + "," + speeds[1] + "," + speeds[2] + "," + speeds[3] + "," + controller.getRawIntakeSpeed();
+            try {
+                bw.write(s);
+                bw.newLine();
+                lines++; 
+            } catch (IOException e) {
+                
+                e.printStackTrace();
+            }
+            
+        }
         if (Math.abs(xController.getY(Hand.kLeft)) > 0.05) COMPASS_OFFSET += xController.getY(Hand.kLeft);
 
     }

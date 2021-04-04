@@ -218,6 +218,17 @@ public class Controller{
     public void inverseWheels() {
         wheels.inverse();
     }
+
+    public double[] getRawDriveSpeeds() {
+        return wheels.getRawSpeeds(); 
+    }
+
+    public double getRawIntakeSpeed() {
+        return intake.getRawSpeed();
+    }
+    public void setRawDriveSpeeds(double[] speeds) {
+        wheels.setRawSpeeds(speeds);
+    }
 }
 
 
