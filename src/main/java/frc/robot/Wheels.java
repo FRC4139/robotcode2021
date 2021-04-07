@@ -23,8 +23,8 @@ public class Wheels {
     private WPI_TalonFX backRight;
     private DifferentialDrive wheels;
     private boolean inverseState;
-    private SlewRateLimiter leftLimiter = new SlewRateLimiter(0.5);
-    private SlewRateLimiter righLimiter = new SlewRateLimiter(0.5);
+    private SlewRateLimiter leftLimiter = new SlewRateLimiter(1);
+    private SlewRateLimiter righLimiter = new SlewRateLimiter(1.5);
 
     public Wheels(int fL, int bL, int fR, int bR) {
         //initialize motor objects
@@ -56,7 +56,7 @@ public class Wheels {
     public void drive(double leftSpeed, double rightSpeed) {
 
 
-        System.out.println("Setting speeds to: " + leftSpeed + " " + rightSpeed);
+        //System.out.println("Setting speeds to: " + leftSpeed + " " + rightSpeed);
         leftSpeed *= 0.5;
         rightSpeed *= 0.5;
         if(!inverseState)
@@ -81,10 +81,10 @@ public class Wheels {
     }
 
     public void diffDrive(double speed1, double speed2, DriveType dType) {
-        System.out.println("Setting speeds to: " + speed1 + " " + speed2);
+        //System.out.println("Setting speeds to: " + speed1 + " " + speed2);
 
-        speed1 *= 0.8; 
-        speed2 *= 0.8;
+        speed1 *= 0.9; 
+        speed2 *= 0.9;
         speed1 = leftLimiter.calculate(speed1);
         speed2 = righLimiter.calculate(speed2);
 

@@ -43,7 +43,7 @@ public class Controller{
     private ChallengeFour cFour;
     private ChallengeFive cFive;
     //-1 = testing, 1 = challenge one, 2 = challenge 2... 5 = challenge 5
-    private int challengeNumber = 4; 
+    private int challengeNumber = 2; 
 
 
 
@@ -68,7 +68,7 @@ public class Controller{
 
 
         cOne = new ChallengeOne(this);
-        cTwo = new ChallengeTwo(this, 3);
+        cTwo = new ChallengeTwo(this, 1);
         cThree = new ChallengeThree(this);
         cFour = new ChallengeFour(this);
         cFive = new ChallengeFive(this);

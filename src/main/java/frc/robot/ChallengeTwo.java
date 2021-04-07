@@ -56,7 +56,7 @@ public class ChallengeTwo {
             / (CIRCLE_RADIUS + DISTANCE_PIVOT_TO_WHEEL) * OUTER_TURN_DRIVE_SPEED;
 
     private int segment = 1;
-    private String path = "/media/sda1/Challenge_2_Path_";
+    private String path = "/home/lvuser/Challenge_2_Path_";
     // this is the main controller class (which we have written before), which will
     // call the update methods below. This is NOT an Xbox Controller
     private Controller controller;
@@ -269,6 +269,7 @@ public class ChallengeTwo {
     public ChallengeTwo(Controller cIn, int p) {
         controller = cIn;
         path = path + p + ".txt";
+        System.out.println(path);
         xController = controller.xcontroller;
         csvPath = new CSVPath(path);
 
@@ -310,8 +311,23 @@ public class ChallengeTwo {
             int l = csvPath.Update(controller);
             SmartDashboard.putNumber("Current Line #", l);
         } catch (IOException e) {
-
-            e.printStackTrace();
+            SmartDashboard.putString("error", e.getMessage());
+            out = new File("/media/sda1/error.txt");
+            try {
+                out.createNewFile();
+                fw = new FileWriter(out);
+                bw = new BufferedWriter(fw);
+            } catch (IOException ea) {
+                //  Auto-generated catch block
+                try {
+                    bw.write(e.getMessage());
+                    bw.close();
+                } catch (IOException e1) {
+                    // Auto-generated catch block
+                    e1.printStackTrace();
+                }
+                ea.printStackTrace();
+            }
         }
 
         // if (pathSegments.get(path).get(segment - 1).IsSegmentComplete(getDistanceTravelled(), getAngleFacing())) {
@@ -332,8 +348,8 @@ public class ChallengeTwo {
     //this is called every 20 milliseconds during teleop (manually controlled by human with xboxcontroller)
     private int lines = 0; 
     public void UpdateTeleop(){
-
-        // SmartDashboard.putString("Current Path", path);
+        
+        SmartDashboard.putString("Current Path", path);
         // SmartDashboard.putNumber("Current Segment", segment);
         SmartDashboard.putNumber("Total distance travelled (in)", getDistanceTravelled());
         SmartDashboard.putNumber("Angle Facing Real (deg)", controller.getAngleFacing());
@@ -342,6 +358,7 @@ public class ChallengeTwo {
         SmartDashboard.putNumber("Lines recorded", lines);
 
         if (xController.getAButtonPressed()) { 
+            System.out.println(path);
             out = new File(path);
             try {
                 out.createNewFile();

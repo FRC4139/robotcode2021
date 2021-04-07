@@ -223,7 +223,7 @@ public class ChallengeOne {
 
         }
 
-        csvPath = new CSVPath(path);
+        
 
     }
 
@@ -234,7 +234,7 @@ public class ChallengeOne {
     private boolean recording = false;
 
     private int lines;
-
+    private boolean loaded = false;
     //this is called every 20 milliseconds during autonomous
     public void UpdateAutonomous() {
         // Display useful information
@@ -245,7 +245,7 @@ public class ChallengeOne {
         SmartDashboard.putNumber("Angle Facing Adjusted (deg)", getAngleFacing());
         SmartDashboard.putNumber("Compass Offset", COMPASS_OFFSET);
         SmartDashboard.putNumber("Compass Heading", getCompassHeading());
-        
+        if (!loaded) { csvPath = new CSVPath(path); loaded = true; }
 
         try {
             int l = csvPath.Update(controller);
@@ -294,6 +294,7 @@ public class ChallengeOne {
 
         if (xController.getAButtonPressed()) { 
             out = new File(path);
+            
             try {
                 out.createNewFile();
                 fw = new FileWriter(out);
