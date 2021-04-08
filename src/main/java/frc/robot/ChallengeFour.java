@@ -22,7 +22,7 @@ public class ChallengeFour {
     private static double FEEDER_SPEED = -0.4;
     private static double INTAKE_SPEED = 0.85;
     private static double ZERO = 0;
-
+    
     //put variables here
     private double shooterSpeed = 0.5; // incremented as we move further back from target
     private DriveType driveType;
