@@ -24,7 +24,7 @@ public class ChallengeFour {
     private static double ZERO = 0;
 
     //put variables here
-    private double shooterSpeed = 0.5; // incremented as we move further back from target
+    private double shooterSpeed = 0.65; // incremented as we move further back from target
     private DriveType driveType;
 
     //this is the main controller class (which we have written before), which will call the update methods below. This is NOT an Xbox Controller

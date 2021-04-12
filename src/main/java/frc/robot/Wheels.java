@@ -83,8 +83,8 @@ public class Wheels {
     public void diffDrive(double speed1, double speed2, DriveType dType) {
         //System.out.println("Setting speeds to: " + speed1 + " " + speed2);
 
-        speed1 *= 0.9; 
-        speed2 *= 0.9;
+        speed1 *= 0.75; 
+        speed2 *= 0.6;
         speed1 = leftLimiter.calculate(speed1);
         speed2 = righLimiter.calculate(speed2);
 
